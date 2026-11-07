@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -77,6 +77,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .chip.in{background:var(--green);color:var(--ongreen)}
 .tg{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surf);color:var(--ink);font-size:1.3rem;line-height:1;cursor:pointer;z-index:4;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 
+
 /* Palette preview controls and theme tokens */
 .palette-toggle{position:fixed;right:14px;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:6;border:1px solid var(--line);background:var(--surf);color:var(--ink);border-radius:999px;padding:10px 14px;font:600 14px "Bricolage Grotesque",system-ui,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.16);cursor:pointer}
 .palette-panel{position:fixed;right:14px;bottom:calc(124px + env(safe-area-inset-bottom,0px));z-index:7;width:min(300px,calc(100vw - 28px));padding:14px;background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.22);display:none}
@@ -93,6 +94,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .palette-mode button{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--ink);cursor:pointer}
 .palette-mode button.active{background:var(--green);border-color:var(--green);color:var(--ongreen)}
 @media(max-width:420px){.palette-toggle{right:12px}.palette-panel{right:12px}}
+
 
 .top{gap:12px}.top .chip{display:block;flex:0 1 auto;min-width:0;max-width:calc(100% - 96px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.top .link{flex:none;white-space:nowrap;width:auto}
 .panel{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
@@ -228,8 +230,10 @@ function render(){
  }
  if(view==="home"){
   h='<div class="cols"><div class="side"><section class="panel"><div class="top"><span class="chip'+(user.guest?'':' in')+'">'+(user.guest?'Guest':esc(user.name))+'</span><button class="link" data-a="logout">Log out</button></div>'+
-  '<h2>Find a product</h2><p class="mute">Point your camera at its barcode.</p>'+
-  '<div id="scanbox"></div><button class="btn main" data-a="scan">Scan barcode</button>'+(msg?'<p class="msg" role="status">'+msg+'</p>':'')+
+  '<h2>Find a product</h2><p class="mute">Point your camera or upload a barcode image.</p>'+
+  '<div id="scanbox"></div><button class="btn main" data-a="scan">Scan barcode</button>'+
+  '<input type="file" id="barcodeUpload" accept="image/*" style="display:none"><button class="btn" data-a="upload-trigger">Upload barcode image</button>'+
+  (msg?'<p class="msg" role="status">'+msg+'</p>':'')+
   '<form class="pair" data-a="code"><input class="in" id="code" inputmode="numeric" placeholder="Or type the barcode number" aria-label="Barcode number"><button class="btn" type="submit">Find</button></form>'+
   '<button class="btn" '+(user.guest?'disabled':'data-a="add"')+'>Add a product'+(user.guest?'<small>Log in to add products</small>':'')+'</button></section><section class="panel bp"><h3>Browse products</h3><input class="in" id="name" type="search" placeholder="Search by product name" aria-label="Search by name" value="'+esc(Q)+'">'+filters()+'</section></div><div class="main"><div id="hits">'+hits()+'</div></div></div>';
  }
@@ -254,7 +258,7 @@ function render(){
  app.className="wrap v-"+view;app.innerHTML=h;
 }
 var F={b:"",m:"",c:"",o:""},Q="";
-function bcbox(){return '<div id="scanbox"></div><label>Barcode (optional)<input class="in" id="bc" inputmode="numeric" placeholder="Scan or type the barcode"></label><div class="btns2"><button class="btn" type="button" data-a="fscan">Scan barcode</button><button class="btn" type="button" data-a="ffill">Fill in details</button></div><p class="msg" id="bcmsg" role="status"></p>'}
+function bcbox(){return '<div id="scanbox"></div><label>Barcode (optional)<input class="in" id="bc" inputmode="numeric" placeholder="Scan, upload, or type the barcode"></label><div class="btns2"><button class="btn" type="button" data-a="fscan">Scan barcode</button><button class="btn" type="button" data-a="fupl">Upload image</button><button class="btn" type="button" data-a="ffill">Fill in details</button></div><input type="file" id="barcodeUploadModal" accept="image/*" style="display:none"><p class="msg" id="bcmsg" role="status"></p>'}
 function fill(c){c=c.trim();var j=P.map(function(p){return p[0]}).indexOf(c),n=document.getElementById("bcmsg");
  if(j<0){n.textContent=c?"No details found for this barcode yet. Fill in the form by hand and the barcode will be saved with the product.":"Type or scan a barcode first.";return}
  var m=M[j],v={pn:m.n,pb:m.b,pm:m.m,pc:m.c,po:m.o,ps:P[j][2]};for(var k in v)document.getElementById(k).value=v[k];
@@ -315,6 +319,31 @@ async function scan(){
   timer=setInterval(async function(){try{var r=await det.detect(v);if(r.length)onCode(r[0].rawValue)}catch(e){}},400);
  }catch(e){stopScan();fail("Couldn’t open the camera. Allow camera access, or type the barcode instead.")}
 }
+async function handleBarcodeImage(file){
+ if(!("BarcodeDetector" in window)){
+  if(view==="add") document.getElementById("bcmsg").textContent = "BarcodeDetector API is not supported in this browser.";
+  else { msg = "BarcodeDetector API is not supported in this browser."; render(); }
+  return;
+ }
+ try {
+  var det = new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e"]});
+  var imgEl = document.createElement("img");
+  var url = URL.createObjectURL(file);
+  imgEl.src = url;
+  await new Promise((resolve, reject) => { imgEl.onload = resolve; imgEl.onerror = reject; });
+  var codes = await det.detect(imgEl);
+  URL.revokeObjectURL(url);
+  if(codes.length > 0){
+   onCode(codes[0].rawValue);
+  } else {
+   if(view==="add") document.getElementById("bcmsg").textContent = "No barcode detected in the uploaded image.";
+   else { msg = "No barcode detected in the uploaded image. Try another photo."; render(); }
+  }
+ } catch(err){
+  if(view==="add") document.getElementById("bcmsg").textContent = "Failed to process the uploaded image.";
+  else { msg = "Failed to process the uploaded image."; render(); }
+ }
+}
 app.addEventListener("click",function(e){
  var b=e.target.closest("button");if(e.target.classList.contains("modal")){e.target.remove();return}if(!b||b.disabled)return;
  var a=b.dataset.a;
@@ -329,12 +358,24 @@ app.addEventListener("click",function(e){
  if(a==="fopen")fopen(b.dataset.k);
  if(a==="fpick"){var k=b.dataset.k;F[k]=b.dataset.v;var md2=app.querySelector(".modal");if(md2)md2.remove();document.getElementById("fl").innerHTML=fl();document.getElementById("hits").innerHTML=hits();var fb=document.querySelector('.fbtn[data-k="'+k+'"]');if(fb)fb.focus()}
  if(a==="fscan")scan();
+ if(a==="upload-trigger")document.getElementById("barcodeUpload").click();
+ if(a==="fupl")document.getElementById("barcodeUploadModal").click();
  if(a==="ffill")fill(V("bc"));
  if(a==="dclose"){var md=app.querySelector(".modal");if(md)md.remove()}
  if(a==="results")go("results");
  if(a==="scan")scan();
  if(b.dataset.c)find(b.dataset.c);
  if(b.dataset.s!==undefined){store=+b.dataset.s;go("store")}
+});
+document.addEventListener("change",function(e){
+ if(e.target.id==="barcodeUpload" && e.target.files.length){
+  handleBarcodeImage(e.target.files[0]);
+  e.target.value = "";
+ }
+ if(e.target.id==="barcodeUploadModal" && e.target.files.length){
+  handleBarcodeImage(e.target.files[0]);
+  e.target.value = "";
+ }
 });
 app.addEventListener("submit",function(e){e.preventDefault();var a=e.target.dataset.a;
  if(a==="code"){var c=document.getElementById("code").value;if(c.trim())find(c)}
@@ -353,6 +394,7 @@ tg.addEventListener("click",function(){var n=isDark()?"light":"dark";document.do
 if(mq.addEventListener)mq.addEventListener("change",paint);
 render();
 </script>
+
 
 <script>
 (function(){
@@ -394,6 +436,7 @@ render();
   apply();
 })();
 </script>
+
 
 </body>
 </html>
