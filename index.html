@@ -6,13 +6,13 @@
 <title>Presyo Check</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
 <style>
-:root{--bg:#f3f6f1;--surf:#fff;--ink:#16261c;--mute:#5b6b60;--line:#d9e1d6;--green:#1f6b3a;--ongreen:#fff;--tag:#ffd23f;--tagink:#3a2d00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1812;--surf:#17241b;--ink:#e8f1ea;--mute:#9bb0a1;--line:#2a3b2f;--green:#6fcf8f;--ongreen:#0f1812}}
-:root[data-theme="dark"]{--bg:#0f1812;--surf:#17241b;--ink:#e8f1ea;--mute:#9bb0a1;--line:#2a3b2f;--green:#6fcf8f;--ongreen:#0f1812}
+:root{--bg:#F1F5F9;--surf:#FFFFFF;--ink:#0F172A;--mute:#64748B;--line:#CBD5E1;--green:#4F46E5;--deep:#3730A3;--hd:#3730A3;--link:#4F46E5;--focus:#4F46E5;--ongreen:#FFFFFF;--star:#F97316;--tag:#F97316;--tagink:#0F172A;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#090D16;--surf:#1E293B;--ink:#F8FAFC;--mute:#94A3B8;--line:#334155;--green:#6366F1;--deep:#4F46E5;--hd:#818CF8;--link:#818CF8;--focus:#818CF8;--ongreen:#FFFFFF;--star:#FB923C;--tag:#FB923C;--tagink:#090D16}}
+:root[data-theme="dark"]{--bg:#090D16;--surf:#1E293B;--ink:#F8FAFC;--mute:#94A3B8;--line:#334155;--green:#6366F1;--deep:#4F46E5;--hd:#818CF8;--link:#818CF8;--focus:#818CF8;--ongreen:#FFFFFF;--star:#FB923C;--tag:#FB923C;--tagink:#090D16}
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
-.wrap{max-width:560px;margin:0 auto;padding:20px 16px 60px}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 16px 60px}
 h1{font-size:clamp(2.2rem,9vw,3.4rem);line-height:1;margin:0 0 8px;font-weight:800;letter-spacing:-.02em}
 h2{font-size:1.5rem;margin:6px 0 2px;line-height:1.15}
 p{margin:0 0 14px}.mute{color:var(--mute)}
@@ -58,10 +58,55 @@ h3{font-size:1.1rem;margin:16px 0 6px}h3.pn{font-size:1.4rem;margin:0 0 8px}
 .btns2{display:flex;gap:8px;margin-bottom:6px}.btns2 .btn{margin:0}
 .badge{display:inline-block;background:var(--tag);color:var(--tagink);border-radius:6px;padding:0 6px;font-size:.8rem;font-weight:600}
 .frm label{display:block;font-size:.85rem;color:var(--mute);margin-bottom:8px}.frm .in{margin:4px 0 0}
+.v-login,.v-signin,.v-add{max-width:560px}
+.cols,.cols2{display:block}
+.grid,#hits{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.grid .item,#hits .item{margin:0}
+.btn{min-height:48px}.link{padding:10px 0}.in{font-size:16px}
+@media (hover:hover){.item:hover{border-color:var(--green)}.btn:not(:disabled):hover{border-color:var(--green)}}
+@media (min-width:900px){.wrap{padding:32px 28px 80px}.cols{display:grid;grid-template-columns:340px 1fr;gap:36px;align-items:start}}
+@media (min-width:800px){.cols2{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:32px;align-items:start}.rvs{max-height:420px}.pimg svg{width:180px}}
+@media (max-width:420px){.dlg .btns{flex-direction:column}.wrap{padding:16px 14px 48px}.pair{flex-wrap:wrap}.pair .in{flex:1 1 100%}.pair .btn{width:100%}}
+h1{color:var(--hd)}.stars{color:var(--star)}
+.link{color:var(--link)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.chip{background:var(--line);color:var(--ink)}
+.in{border-color:var(--mute)}.btn{border-color:var(--line)}
+.dlg,.ov span{border:1px solid var(--line)}
+.btn.main:hover:not(:disabled),.btn.main:active:not(:disabled){background:var(--deep);border-color:var(--deep)}
+.chip.in{background:var(--green);color:var(--ongreen)}
+.tg{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surf);color:var(--ink);font-size:1.3rem;line-height:1;cursor:pointer;z-index:4;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+
+/* Palette preview controls and theme tokens */
+.palette-toggle{position:fixed;right:14px;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:6;border:1px solid var(--line);background:var(--surf);color:var(--ink);border-radius:999px;padding:10px 14px;font:600 14px "Bricolage Grotesque",system-ui,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.16);cursor:pointer}
+.palette-panel{position:fixed;right:14px;bottom:calc(124px + env(safe-area-inset-bottom,0px));z-index:7;width:min(300px,calc(100vw - 28px));padding:14px;background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.22);display:none}
+.palette-panel.open{display:block}
+.palette-panel h3{margin:0 0 4px;font-size:1rem}
+.palette-panel p{font-size:.82rem;color:var(--mute);margin:0 0 12px}
+.palette-choice{width:100%;display:flex;align-items:center;gap:10px;text-align:left;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;margin:7px 0;cursor:pointer}
+.palette-choice[aria-pressed="true"]{border:2px solid var(--green);padding:9px}
+.palette-dots{display:flex;gap:4px;flex:none}
+.palette-dots i{width:17px;height:17px;border-radius:50%;display:block}
+.palette-choice strong{display:block;font-size:.9rem}
+.palette-choice small{display:block;color:var(--mute);font-size:.75rem}
+.palette-mode{display:flex;gap:6px;margin-top:10px}
+.palette-mode button{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+.palette-mode button.active{background:var(--green);border-color:var(--green);color:var(--ongreen)}
+@media(max-width:420px){.palette-toggle{right:12px}.palette-panel{right:12px}}
+
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
+<button class="tg" id="tg" type="button"></button>
+<button class="palette-toggle" id="paletteToggle" type="button" aria-expanded="false">🎨 Theme</button>
+<section class="palette-panel" id="palettePanel" aria-label="Color palette chooser">
+  <h3>Choose your palette</h3><p>Preview the same app in different visual styles.</p>
+  <button class="palette-choice" data-palette-choice="smart" aria-pressed="true"><span class="palette-dots"><i style="background:#2563EB"></i><i style="background:#059669"></i><i style="background:#0F172A"></i></span><span><strong>Modern Fintech</strong><small>Clean, trustworthy, balanced</small></span></button>
+  <button class="palette-choice" data-palette-choice="premium" aria-pressed="false"><span class="palette-dots"><i style="background:#7C3AED"></i><i style="background:#F59E0B"></i><i style="background:#1E1B4B"></i></span><span><strong>Premium Shopping</strong><small>Elegant, premium, refined</small></span></button>
+  <button class="palette-choice" data-palette-choice="deal" aria-pressed="false"><span class="palette-dots"><i style="background:#EA580C"></i><i style="background:#84CC16"></i><i style="background:#292524"></i></span><span><strong>Deal Hunter</strong><small>Bold, energetic, deal-focused</small></span></button>
+  <div class="palette-mode"><button type="button" id="modeLight">☀ Light</button><button type="button" id="modeDark">☾ Dark</button></div>
+</section>
 <script>
 var STORES=[
  {n:"Dali",l:"Pasig City"},{n:"Puregold",l:"Ortigas Ave., Pasig City"},{n:"Shopwise",l:"Cainta, Rizal"},
@@ -108,31 +153,31 @@ function render(){
   '<button class="btn" disabled>Sign up<small>Coming soon</small></button>';
  }
  if(view==="home"){
-  h='<div class="top"><span class="chip">'+(user.guest?'Guest':esc(user.name))+'</span><button class="link" data-a="logout">Log out</button></div>'+
-  '<h2>Find a product</h2><p class="mute">Point your camera at its barcode.</p>'+
+  h='<div class="top"><span class="chip'+(user.guest?'':' in')+'">'+(user.guest?'Guest':esc(user.name))+'</span><button class="link" data-a="logout">Log out</button></div>'+
+  '<div class="cols"><div><h2>Find a product</h2><p class="mute">Point your camera at its barcode.</p>'+
   '<div id="scanbox"></div><button class="btn main" data-a="scan">Scan barcode</button>'+(msg?'<p class="msg" role="status">'+msg+'</p>':'')+
   '<form class="pair" data-a="code"><input class="in" id="code" inputmode="numeric" placeholder="Or type the barcode number" aria-label="Barcode number"><button class="btn" type="submit">Find</button></form>'+
-  '<button class="btn" '+(user.guest?'disabled':'data-a="add"')+'>Add a product'+(user.guest?'<small>Log in to add products</small>':'')+'</button><hr><input class="in" id="name" type="search" placeholder="Search by product name" aria-label="Search by name" value="'+esc(Q)+'">'+filters()+'<div id="hits">'+hits()+'</div>';
+  '<button class="btn" '+(user.guest?'disabled':'data-a="add"')+'>Add a product'+(user.guest?'<small>Log in to add products</small>':'')+'</button></div><div><h3>Browse products</h3><input class="in" id="name" type="search" placeholder="Search by product name" aria-label="Search by name" value="'+esc(Q)+'">'+filters()+'<div id="hits">'+hits()+'</div></div></div>';
  }
  if(view==="results"){
   var idx=[];P.indexOf(cur);cur[3].forEach(function(v,i){if(v!=null)idx.push(i)});
   idx.sort(function(a,b){return cur[3][a]-cur[3][b]});
   h='<button class="link" data-a="home">‹ Back</button><h2>'+M[mi()].n+'</h2><p class="mute">'+cur[2]+'</p>';
-  idx.forEach(function(i,k){h+='<button class="item store" data-s="'+i+'"><b>'+STORES[i].n+'</b><span class="price'+(k===0?' min':'')+'">'+peso(cur[3][i])+'</span><small>'+STORES[i].l+'</small><span class="stars">'+stars(cur[4][i])+'</span></button>'});
-  h+='<p class="msg">Prices shown are sample data.</p>';
+  h+='<div class="grid">';idx.forEach(function(i,k){h+='<button class="item store" data-s="'+i+'"><b>'+STORES[i].n+'</b><span class="price'+(k===0?' min':'')+'">'+peso(cur[3][i])+'</span><small>'+STORES[i].l+'</small><span class="stars">'+stars(cur[4][i])+'</span></button>'});
+  h+='</div><p class="msg">Prices shown are sample data.</p>';
  }
  if(view==="store"){
   var i=store,m=M[mi()];
   h='<button class="link" data-a="results">‹ Back to stores</button><h2>'+STORES[i].n+'</h2><p class="mute">'+STORES[i].l+'</p>'+
-  '<div class="pimg">'+img(m)+'</div><h3 class="pn">'+m.n+'</h3>'+
+  '<div class="cols2"><div><div class="pimg">'+img(m)+'</div><h3 class="pn">'+m.n+'</h3>'+
   '<dl class="det"><dt>Brand Name</dt><dd>'+m.b+'</dd><dt>Parent Company / Manufacturer</dt><dd>'+m.m+'</dd><dt>Product Category</dt><dd>'+m.c+'</dd><dt>Country of Origin</dt><dd>'+m.o+'</dd><dt>Size / Weight</dt><dd>'+cur[2]+'</dd></dl>'+
   '<div class="price" style="text-align:left;font-size:2rem">'+peso(cur[3][i])+'</div><p class="stars">'+stars(cur[4][i])+'</p>'+
-  '<h3>Reviews</h3><div class="rv"><div class="rvs'+(user.guest?' blur':'')+'" tabindex="0" aria-label="Product reviews">'+revs()+'</div>'+(user.guest?'<div class="ov"><span>Log in to read reviews</span></div>':'')+'</div>'+
-  '<button class="btn" style="margin-top:16px" disabled>Send a price update</button><p class="msg">'+(user.guest?'Login with existing account to send a price update...':'Price updates are coming soon.')+'</p>';
+  '</div><div><h3>Reviews</h3><div class="rv"><div class="rvs'+(user.guest?' blur':'')+'" tabindex="0" aria-label="Product reviews">'+revs()+'</div>'+(user.guest?'<div class="ov"><span>Log in to read reviews</span></div>':'')+'</div>'+
+  '<button class="btn" style="margin-top:16px" disabled>Send a price update</button><p class="msg">'+(user.guest?'Login with existing account to send a price update...':'Price updates are coming soon.')+'</p></div></div>';
  }
  if(view==="signin")h='<button class="link" data-a="back">‹ Back</button><h2>Log in</h2><p class="mute">Demo login for now: type any name. Passwords come later.</p><form data-a="signin"><input class="in" id="uname" placeholder="Your name" aria-label="Your name" required><button class="btn main" type="submit">Log in</button></form>';
  if(view==="add")h='<button class="link" data-a="home">‹ Back</button><h2>Add a product</h2><p class="mute">Fill in what is on the shelf tag and the package.</p><form class="frm" data-a="add">'+bcbox()+fld("pn","Product name (include the variant)")+fld("pb","Brand name","","dl-b")+fld("pm","Parent company / manufacturer","","dl-m")+fld("pc","Product category (separate with commas)","","dl-c")+fld("po","Country of origin","","dl-o","Philippines")+fld("ps","Size / weight (for example 155 g)")+fld("st","Store name","","dl-s")+fld("sl","Store location (city or area)")+fld("pp","Current price (₱)","number")+'<label>Your rating<select class="in" id="rt"><option value="">No review yet</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label><label>Your review (optional)<textarea class="in" id="rv" rows="3"></textarea></label><button class="btn main" type="submit">Check and add product</button></form>'+dls();
- app.innerHTML=h;
+ app.className="wrap v-"+view;app.innerHTML=h;
 }
 var F={b:"",m:"",c:"",o:""},Q="";
 function bcbox(){return '<div id="scanbox"></div><label>Barcode (optional)<input class="in" id="bc" inputmode="numeric" placeholder="Scan or type the barcode"></label><div class="btns2"><button class="btn" type="button" data-a="fscan">Scan barcode</button><button class="btn" type="button" data-a="ffill">Fill in details</button></div><p class="msg" id="bcmsg" role="status"></p>'}
@@ -215,7 +260,57 @@ app.addEventListener("submit",function(e){e.preventDefault();var a=e.target.data
  if(a==="add")tryAdd()});
 app.addEventListener("input",function(e){if(e.target.id==="name"){Q=e.target.value;document.getElementById("hits").innerHTML=hits()}});
 app.addEventListener("change",function(e){var k=e.target.dataset.f;if(k){F[k]=e.target.value;document.getElementById("fl").innerHTML=fl();var s=document.querySelector('[data-f="'+k+'"]');if(s)s.focus();document.getElementById("hits").innerHTML=hits()}});
+var th=null,mq=window.matchMedia("(prefers-color-scheme: dark)"),tg=document.getElementById("tg");
+try{th=localStorage.getItem("pc_theme")}catch(e){}
+function isDark(){var a=document.documentElement.getAttribute("data-theme");return a?a==="dark":mq.matches}
+function paint(){var d=isDark();tg.textContent=d?"☀":"☾";tg.setAttribute("aria-label",d?"Switch to light mode":"Switch to dark mode")}
+if(th==="light"||th==="dark")document.documentElement.setAttribute("data-theme",th);
+paint();
+tg.addEventListener("click",function(){var n=isDark()?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("pc_theme",n)}catch(e){}paint()});
+if(mq.addEventListener)mq.addEventListener("change",paint);
 render();
 </script>
+
+<script>
+(function(){
+  const palettes = {
+    smart: {
+      light:{bg:"#FFFFFF",surf:"#FFFFFF",ink:"#0F172A",mute:"#64748B",line:"#E2E8F0",green:"#2563EB",deep:"#1D4ED8",hd:"#0F172A",link:"#2563EB",focus:"#2563EB",ongreen:"#FFFFFF",star:"#D97706",tag:"#D1FAE5",tagink:"#065F46"},
+      dark:{bg:"#0B1120",surf:"#1E293B",ink:"#F1F5F9",mute:"#94A3B8",line:"#334155",green:"#3B82F6",deep:"#2563EB",hd:"#F1F5F9",link:"#60A5FA",focus:"#60A5FA",ongreen:"#FFFFFF",star:"#FBBF24",tag:"#064E3B",tagink:"#D1FAE5"}
+    },
+    premium: {
+      light:{bg:"#FAF9FF",surf:"#FFFFFF",ink:"#1E1B4B",mute:"#6B6687",line:"#E7E2F2",green:"#7C3AED",deep:"#6D28D9",hd:"#1E1B4B",link:"#7C3AED",focus:"#8B5CF6",ongreen:"#FFFFFF",star:"#D97706",tag:"#FEF3C7",tagink:"#92400E"},
+      dark:{bg:"#100D1F",surf:"#211B36",ink:"#F5F3FF",mute:"#B7AECF",line:"#403653",green:"#A78BFA",deep:"#8B5CF6",hd:"#F5F3FF",link:"#C4B5FD",focus:"#C4B5FD",ongreen:"#1E1B4B",star:"#FBBF24",tag:"#594018",tagink:"#FDE68A"}
+    },
+    deal: {
+      light:{bg:"#FAFAF9",surf:"#FFFFFF",ink:"#292524",mute:"#78716C",line:"#E7E5E4",green:"#EA580C",deep:"#C2410C",hd:"#292524",link:"#C2410C",focus:"#F97316",ongreen:"#FFFFFF",star:"#D97706",tag:"#ECFCCB",tagink:"#3F6212"},
+      dark:{bg:"#171412",surf:"#292524",ink:"#FAFAF9",mute:"#A8A29E",line:"#57534E",green:"#F97316",deep:"#EA580C",hd:"#FAFAF9",link:"#FDBA74",focus:"#FB923C",ongreen:"#FFFFFF",star:"#FBBF24",tag:"#365314",tagink:"#ECFCCB"}
+    }
+  };
+  const root=document.documentElement, panel=document.getElementById("palettePanel"), toggle=document.getElementById("paletteToggle");
+  let palette="smart";
+  try{palette=localStorage.getItem("pc_palette")||"smart"}catch(e){}
+  function mode(){return isDark()?"dark":"light"}
+  function apply(){
+    const m=mode(), colors=palettes[palette][m];
+    Object.keys(colors).forEach(k=>root.style.setProperty("--"+k,colors[k]));
+    document.querySelectorAll("[data-palette-choice]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.paletteChoice===palette)));
+    document.getElementById("modeLight").classList.toggle("active",m==="light");
+    document.getElementById("modeDark").classList.toggle("active",m==="dark");
+    try{localStorage.setItem("pc_palette",palette)}catch(e){}
+    if(typeof paint==="function")paint();
+  }
+  document.querySelectorAll("[data-palette-choice]").forEach(b=>b.addEventListener("click",()=>{palette=b.dataset.paletteChoice;apply()}));
+  document.getElementById("modeLight").addEventListener("click",()=>{root.setAttribute("data-theme","light");try{localStorage.setItem("pc_theme","light")}catch(e){};apply()});
+  document.getElementById("modeDark").addEventListener("click",()=>{root.setAttribute("data-theme","dark");try{localStorage.setItem("pc_theme","dark")}catch(e){};apply()});
+  toggle.addEventListener("click",()=>{const open=panel.classList.toggle("open");toggle.setAttribute("aria-expanded",String(open))});
+  document.addEventListener("click",e=>{if(!panel.contains(e.target)&&!toggle.contains(e.target)){panel.classList.remove("open");toggle.setAttribute("aria-expanded","false")}});
+  const oldToggle=document.getElementById("tg");
+  oldToggle.addEventListener("click",()=>setTimeout(apply,0));
+  if(window.matchMedia){const mq=window.matchMedia("(prefers-color-scheme: dark)");if(mq.addEventListener)mq.addEventListener("change",()=>setTimeout(apply,0))}
+  apply();
+})();
+</script>
+
 </body>
 </html>
