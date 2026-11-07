@@ -94,6 +94,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .palette-mode button.active{background:var(--green);border-color:var(--green);color:var(--ongreen)}
 @media(max-width:420px){.palette-toggle{right:12px}.palette-panel{right:12px}}
 
+.top{gap:12px}.top .chip{display:block;flex:0 1 auto;min-width:0;max-width:calc(100% - 96px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.top .link{flex:none;white-space:nowrap;width:auto}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.panel h2{margin-top:0}.panel h3{margin:0 0 10px}.panel .top{margin-bottom:12px}.panel .flt{grid-template-columns:1fr}
+.fw{margin-bottom:8px}.fl-l{display:block;font-size:.85rem;color:var(--mute)}
+.fbtn{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;cursor:pointer;margin:4px 0 0;min-height:44px}
+.ft{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item.sel{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
+.modal{z-index:20}.dlg{padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}.dlg .list{max-height:min(50vh,360px)}.dlg .list .item{margin-bottom:8px}
+@media (max-width:600px){.modal.sheet{align-items:flex-end;padding:0}.sheet .dlg{max-width:none;border-radius:16px 16px 0 0}}
+@media (min-width:900px){.side{position:sticky;top:16px}.bp{max-height:max(260px,calc(100vh - 460px));overflow-y:auto}.main{min-width:0}}
+.item[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -153,11 +164,11 @@ function render(){
   '<button class="btn" disabled>Sign up<small>Coming soon</small></button>';
  }
  if(view==="home"){
-  h='<div class="top"><span class="chip'+(user.guest?'':' in')+'">'+(user.guest?'Guest':esc(user.name))+'</span><button class="link" data-a="logout">Log out</button></div>'+
-  '<div class="cols"><div><h2>Find a product</h2><p class="mute">Point your camera at its barcode.</p>'+
+  h='<div class="cols"><div class="side"><section class="panel"><div class="top"><span class="chip'+(user.guest?'':' in')+'">'+(user.guest?'Guest':esc(user.name))+'</span><button class="link" data-a="logout">Log out</button></div>'+
+  '<h2>Find a product</h2><p class="mute">Point your camera at its barcode.</p>'+
   '<div id="scanbox"></div><button class="btn main" data-a="scan">Scan barcode</button>'+(msg?'<p class="msg" role="status">'+msg+'</p>':'')+
   '<form class="pair" data-a="code"><input class="in" id="code" inputmode="numeric" placeholder="Or type the barcode number" aria-label="Barcode number"><button class="btn" type="submit">Find</button></form>'+
-  '<button class="btn" '+(user.guest?'disabled':'data-a="add"')+'>Add a product'+(user.guest?'<small>Log in to add products</small>':'')+'</button></div><div><h3>Browse products</h3><input class="in" id="name" type="search" placeholder="Search by product name" aria-label="Search by name" value="'+esc(Q)+'">'+filters()+'<div id="hits">'+hits()+'</div></div></div>';
+  '<button class="btn" '+(user.guest?'disabled':'data-a="add"')+'>Add a product'+(user.guest?'<small>Log in to add products</small>':'')+'</button></section><section class="panel bp"><h3>Browse products</h3><input class="in" id="name" type="search" placeholder="Search by product name" aria-label="Search by name" value="'+esc(Q)+'">'+filters()+'</section></div><div class="main"><div id="hits">'+hits()+'</div></div></div>';
  }
  if(view==="results"){
   var idx=[];P.indexOf(cur);cur[3].forEach(function(v,i){if(v!=null)idx.push(i)});
@@ -175,7 +186,7 @@ function render(){
   '</div><div><h3>Reviews</h3><div class="rv"><div class="rvs'+(user.guest?' blur':'')+'" tabindex="0" aria-label="Product reviews">'+revs()+'</div>'+(user.guest?'<div class="ov"><span>Log in to read reviews</span></div>':'')+'</div>'+
   '<button class="btn" style="margin-top:16px" disabled>Send a price update</button><p class="msg">'+(user.guest?'Login with existing account to send a price update...':'Price updates are coming soon.')+'</p></div></div>';
  }
- if(view==="signin")h='<button class="link" data-a="back">‹ Back</button><h2>Log in</h2><p class="mute">Demo login for now: type any name. Passwords come later.</p><form data-a="signin"><input class="in" id="uname" placeholder="Your name" aria-label="Your name" required><button class="btn main" type="submit">Log in</button></form>';
+ if(view==="signin")h='<button class="link" data-a="back">‹ Back</button><h2>Log in</h2><p class="mute">Demo login for now: type any name. Passwords come later.</p><form data-a="signin"><input class="in" id="uname" maxlength="24" placeholder="Your name" aria-label="Your name" required><button class="btn main" type="submit">Log in</button></form>';
  if(view==="add")h='<button class="link" data-a="home">‹ Back</button><h2>Add a product</h2><p class="mute">Fill in what is on the shelf tag and the package.</p><form class="frm" data-a="add">'+bcbox()+fld("pn","Product name (include the variant)")+fld("pb","Brand name","","dl-b")+fld("pm","Parent company / manufacturer","","dl-m")+fld("pc","Product category (separate with commas)","","dl-c")+fld("po","Country of origin","","dl-o","Philippines")+fld("ps","Size / weight (for example 155 g)")+fld("st","Store name","","dl-s")+fld("sl","Store location (city or area)")+fld("pp","Current price (₱)","number")+'<label>Your rating<select class="in" id="rt"><option value="">No review yet</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label><label>Your review (optional)<textarea class="in" id="rv" rows="3"></textarea></label><button class="btn main" type="submit">Check and add product</button></form>'+dls();
  app.className="wrap v-"+view;app.innerHTML=h;
 }
@@ -187,6 +198,12 @@ function fill(c){c=c.trim();var j=P.map(function(p){return p[0]}).indexOf(c),n=d
  n.textContent="Details filled in for “"+m.n+"”. Add the store, location and price you saw."}
 function onCode(c){if(view==="add"){stopScan();document.getElementById("scanbox").innerHTML="";document.getElementById("bc").value=c;fill(c)}else find(c)}
 function fail(t){if(view==="add"){document.getElementById("scanbox").innerHTML='<p class="msg">'+t+'</p>'}else{msg=t;render()}}
+var FN={b:["All brands","Brand name"],m:["All manufacturers","Parent company / manufacturer"],c:["All categories","Product category"],o:["All countries","Country of origin"]};
+function vals(k){var s=[];M.forEach(function(m){if(!ok(m,k))return;(k==="c"?m.c.split(", "):[m[k]]).forEach(function(v){if(s.indexOf(v)<0)s.push(v)})});return s.sort()}
+function fopen(k){var h='<div class="modal sheet" role="dialog" aria-modal="true" aria-label="'+FN[k][1]+'"><div class="dlg"><h2>'+FN[k][1]+'</h2><input class="in" id="fs" type="search" autocomplete="off" placeholder="Search '+FN[k][1].toLowerCase()+'" aria-label="Search '+FN[k][1]+'"><div class="list"><p class="mute" id="fnone" hidden>No match. Try a shorter word.</p><button class="item'+(F[k]?'':' sel')+'" data-a="fpick" data-k="'+k+'" data-v="">'+FN[k][0]+(F[k]?'':' ✓')+'</button>';
+ vals(k).forEach(function(v){h+='<button class="item'+(F[k]===v?' sel':'')+'" data-a="fpick" data-k="'+k+'" data-v="'+esc(v)+'">'+esc(v)+(F[k]===v?' ✓':'')+'</button>'});
+ app.insertAdjacentHTML("beforeend",h+'</div><button class="btn" data-a="dclose">Close</button></div></div>');var f1=app.querySelector(".modal .item");if(f1)f1.focus()}
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){var m=app.querySelector(".modal");if(m)m.remove()}});
 var COLS=["#2f6fb0","#c0392b","#2a8f5b","#7a4b2a","#8e44ad","#d35400"],pend=null;
 function V(id){return document.getElementById(id).value.trim().replace(/[<>"]/g,"")}
 function fld(id,l,t,dl,v){return '<label>'+l+'<input class="in" id="'+id+'" type="'+(t||"text")+'"'+(t==="number"?' step="0.01" min="0.01"':'')+(dl?' list="'+dl+'"':'')+' value="'+(v||'')+'" required></label>'}
@@ -223,7 +240,7 @@ function hits(){var t=Q.toLowerCase(),o="";P.forEach(function(p,i){var m=M[i];
 function ok(m,x){return (x==="b"||!F.b||m.b===F.b)&&(x==="m"||!F.m||m.m===F.m)&&(x==="o"||!F.o||m.o===F.o)&&(x==="c"||!F.c||m.c.split(", ").indexOf(F.c)>=0)}
 function opts(k){var s=[];M.forEach(function(m){if(!ok(m,k))return;(k==="c"?m.c.split(", "):[m[k]]).forEach(function(v){if(s.indexOf(v)<0)s.push(v)})});s.sort();return s.map(function(v){return '<option'+(F[k]===v?' selected':'')+'>'+esc(v)+'</option>'}).join('')}
 function filters(){return '<div id="fl">'+fl()+'</div>'}
-function fl(){return '<div class="flt">'+[["b","All brands","Brand name"],["m","All manufacturers","Parent company / manufacturer"],["c","All categories","Product category"],["o","All countries","Country of origin"]].map(function(f){return '<label>'+f[2]+'<select class="in" data-f="'+f[0]+'"><option value="">'+f[1]+'</option>'+opts(f[0])+'</select></label>'}).join('')+'</div><button class="link" data-a="clear">Clear filters</button>'}
+function fl(){return '<div class="flt">'+[["b","All brands","Brand name"],["m","All manufacturers","Parent company / manufacturer"],["c","All categories","Product category"],["o","All countries","Country of origin"]].map(function(f){return '<div class="fw"><span class="fl-l">'+f[2]+'</span><button type="button" class="in fbtn" data-a="fopen" data-k="'+f[0]+'"><span class="ft">'+esc(F[f[0]]||f[1])+'</span><span aria-hidden="true">▾</span></button></div>'}).join('')+'</div><button class="link" data-a="clear">Clear filters</button>'}
 async function scan(){
  var box=document.getElementById("scanbox");
  if(!("BarcodeDetector" in window)||!navigator.mediaDevices){fail("Camera scanning isn’t available in this browser. Type the barcode instead.");return}
@@ -236,7 +253,7 @@ async function scan(){
  }catch(e){stopScan();fail("Couldn’t open the camera. Allow camera access, or type the barcode instead.")}
 }
 app.addEventListener("click",function(e){
- var b=e.target.closest("button");if(!b||b.disabled)return;
+ var b=e.target.closest("button");if(e.target.classList.contains("modal")){e.target.remove();return}if(!b||b.disabled)return;
  var a=b.dataset.a;
  if(a==="guest"){user={guest:true};go("home")}
  if(a==="logout"){user={guest:true};cur=null;msg="";go("login")}
@@ -246,6 +263,8 @@ app.addEventListener("click",function(e){
  if(a==="back")go("login");
  if(a==="add")go("add");
  if(a==="dadd")doAdd();
+ if(a==="fopen")fopen(b.dataset.k);
+ if(a==="fpick"){var k=b.dataset.k;F[k]=b.dataset.v;var md2=app.querySelector(".modal");if(md2)md2.remove();document.getElementById("fl").innerHTML=fl();document.getElementById("hits").innerHTML=hits();var fb=document.querySelector('.fbtn[data-k="'+k+'"]');if(fb)fb.focus()}
  if(a==="fscan")scan();
  if(a==="ffill")fill(V("bc"));
  if(a==="dclose"){var md=app.querySelector(".modal");if(md)md.remove()}
@@ -258,7 +277,8 @@ app.addEventListener("submit",function(e){e.preventDefault();var a=e.target.data
  if(a==="code"){var c=document.getElementById("code").value;if(c.trim())find(c)}
  if(a==="signin"){var n=V("uname");if(n){user={guest:false,name:n};go("home")}}
  if(a==="add")tryAdd()});
-app.addEventListener("input",function(e){if(e.target.id==="name"){Q=e.target.value;document.getElementById("hits").innerHTML=hits()}});
+app.addEventListener("input",function(e){if(e.target.id==="name"){Q=e.target.value;document.getElementById("hits").innerHTML=hits()}
+ if(e.target.id==="fs"){var t=e.target.value.trim().toLowerCase(),n=0;app.querySelectorAll(".modal .list .item").forEach(function(b,i){var show=t?(i>0&&b.textContent.toLowerCase().indexOf(t)>=0):true;b.hidden=!show;if(show&&i>0)n++});document.getElementById("fnone").hidden=!t||n>0}});
 app.addEventListener("change",function(e){var k=e.target.dataset.f;if(k){F[k]=e.target.value;document.getElementById("fl").innerHTML=fl();var s=document.querySelector('[data-f="'+k+'"]');if(s)s.focus();document.getElementById("hits").innerHTML=hits()}});
 var th=null,mq=window.matchMedia("(prefers-color-scheme: dark)"),tg=document.getElementById("tg");
 try{th=localStorage.getItem("pc_theme")}catch(e){}
