@@ -279,7 +279,16 @@ function render(){
   '<button class="btn" '+(user.guest?'disabled':'data-a="add"')+'>Add a product'+(user.guest?'<small>Log in to add products</small>':'')+'</button></section><section class="panel bp"><h3>Browse products</h3><input class="in" id="name" type="search" placeholder="Search by product name" aria-label="Search by name" value="'+esc(Q)+'">'+filters()+'</section></div><div class="main"><div id="hits">'+hits()+'</div></div></div>';
  }
  if(view==="results"){
-  var idx=[];cur[3].forEach(function(v,i){if(v!=null)idx.push(i)});
+  var idx=[];
+  cur[3].forEach(function(v,i){
+    if(v!=null){
+      // If promoFilter is active, ONLY include stores where this product is on valid promo
+      if(promoFilter && !isPromoActive(cur[5][i])) return;
+      idx.push(i);
+    }
+  });
+
+
   if(selectedArea){
     idx=idx.filter(function(i){return STORES[i].l.toLowerCase().includes(selectedArea.toLowerCase())});
   }
@@ -298,7 +307,7 @@ function render(){
 
 
   if(!idx.length){
-    h+='<p class="mute">No stores match the selected area filter.</p>';
+    h+='<p class="mute">No stores match the selected promo and area filters.</p>';
   } else {
     h+='<div class="grid">';idx.forEach(function(i,k){
       var promo=cur[5][i];
@@ -308,7 +317,6 @@ function render(){
     h+='</div>';
   }
   
-  // Display active promo mechanics summary if any store has a valid promo for this item
   var activePromos = [];
   cur[5].forEach(function(promo, i){
     if(isPromoActive(promo) && (!selectedArea || STORES[i].l.toLowerCase().includes(selectedArea.toLowerCase()))){
