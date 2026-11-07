@@ -269,7 +269,7 @@ function render(){
   '<button class="btn" disabled>Sign up<small>Coming soon</small></button>';
  }
  if(view==="home"){
-  h='<div class="cols"><div class="side"><section class="panel"><div class="top"><span class="chip'+(user.guest?'':' in')+'">'+(user.guest?'Guest':esc(user.name))+'</span><button class="link" data-a="logout">Log out</button></div>'+
+  h='<div class="cols"><div class="side"><section class="panel"><div class="top"><span class="chip'+(user.guest?'':' in')+'">'+(user.guest?'Guest':esc(user.name))+'</span><button class="link" data-a="'+(user.guest?'login':'logout')+'">'+(user.guest?'Log in existing user':'Log out')+'</button></div>'+
   '<h2>Find a product</h2><p class="mute">Point your camera or upload a barcode image.</p>'+
   '<div id="scanbox"></div><button class="btn main" data-a="scan">Scan barcode</button>'+
   '<input type="file" id="barcodeUpload" accept="image/*" style="display:none"><button class="btn" data-a="upload-trigger">Upload barcode image</button>'+
