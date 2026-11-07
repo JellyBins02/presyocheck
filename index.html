@@ -12,7 +12,7 @@
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
-.wrap{max-width:1040px;margin:0 auto;padding:20px 16px 60px}
+.wrap{max-width:1800px;margin:0 auto;padding:20px 16px 60px}
 h1{font-size:clamp(2.2rem,9vw,3.4rem);line-height:1;margin:0 0 8px;font-weight:800;letter-spacing:-.02em}
 h2{font-size:1.5rem;margin:6px 0 2px;line-height:1.15}
 p{margin:0 0 14px}.mute{color:var(--mute)}
@@ -105,6 +105,67 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 @media (max-width:600px){.modal.sheet{align-items:flex-end;padding:0}.sheet .dlg{max-width:none;border-radius:16px 16px 0 0}}
 @media (min-width:900px){.side{position:sticky;top:16px}.bp{max-height:max(260px,calc(100vh - 460px));overflow-y:auto}.main{min-width:0}}
 .item[hidden]{display:none}
+@media (min-width:1200px){.wrap{padding:36px 40px 90px}.cols{grid-template-columns:380px 1fr;gap:40px}.cols2{grid-template-columns:minmax(320px,460px) 1fr;gap:40px}.grid,#hits{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}}
+@media (min-width:900px){
+.wrap.v-home{height:100vh;height:100dvh;display:flex;flex-direction:column;padding-bottom:76px;overflow:hidden}
+.v-home .cols{flex:1;min-height:0;align-items:stretch;grid-template-rows:minmax(0,1fr)}
+.v-home .side{position:static;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
+.v-home .panel{flex:none}
+.v-home .bp{flex:1 1 auto;min-height:220px;max-height:none;overflow-y:auto}
+.v-home .main{min-height:0;overflow-y:auto;background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:16px}
+.palette-toggle{right:70px;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+.palette-panel{bottom:calc(66px + env(safe-area-inset-bottom,0px))}
+}
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+*::-webkit-scrollbar{width:12px;height:12px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{background:var(--line);border-radius:999px;border:3px solid transparent;background-clip:content-box}
+*::-webkit-scrollbar-thumb:hover{background:var(--mute);background-clip:content-box}
+@media (min-width:900px){
+html:has(.v-home),body:has(.v-home){overflow:hidden}
+.v-home .side{overflow:hidden}
+.v-home .panel{flex:0 1 auto;min-height:0;overflow-y:auto}
+.v-home .bp{flex:1 1 0;min-height:140px;margin-bottom:0}
+}
+@media (min-width:900px){
+.v-home .panel:first-child{padding:12px 14px}
+.v-home .panel:first-child>p.mute{display:none}
+.v-home .panel:first-child h2{font-size:1.05rem;margin:0 0 8px}
+.v-home .panel:first-child .btn{min-height:40px;padding:8px 12px;margin-bottom:8px}
+.v-home .panel:first-child .in{padding:8px 12px}
+.v-home .panel:first-child .top{margin-bottom:8px}
+.v-home .panel:first-child .link{padding:4px 0}
+}
+@media (min-width:900px){
+.v-home .panel:first-child{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px}
+.v-home .panel:first-child>*{grid-column:1/-1}
+.v-home .panel:first-child>h2{display:none}
+.v-home .panel:first-child>.top{order:1;margin:0}
+.v-home .panel:first-child>#scanbox{order:2}
+.v-home .panel:first-child>.btn{margin:0;font-size:.9rem}
+.v-home .panel:first-child>.btn[data-a="scan"]{order:3;grid-column:auto}
+.v-home .panel:first-child>.btn:last-child{order:4;grid-column:auto}
+.v-home .panel:first-child>.pair{order:5;margin:0}
+.v-home .panel:first-child>.msg{order:6;margin:0}
+}
+@media (min-width:900px){
+.v-home .side{overflow-y:auto}
+.v-home .panel:first-child{flex:none;overflow:visible}
+.v-home .bp{flex:1 1 0;min-height:160px}
+.v-home .panel:first-child>.btn{min-width:0;padding:8px 6px;line-height:1.25;white-space:normal;overflow:visible}
+.v-home .bp h3{font-size:1rem;margin:0 0 8px}
+.v-home .bp .in{padding:8px 10px;font-size:.9rem;margin-bottom:8px}
+.v-home .bp .fl-l{font-size:.75rem}
+.v-home .bp .fbtn{min-height:36px;margin:2px 0 0;font-size:.9rem}
+.v-home .bp .fw{margin-bottom:6px}
+.v-home .bp .link{font-size:.85rem;padding:4px 0}
+}
+@media (min-width:900px){
+.v-home .bp .fbtn{min-height:30px;padding:3px 10px;border:1px solid var(--line);border-radius:8px;font-size:.85rem;background:var(--bg)}
+.v-home .bp .fbtn:hover{border-color:var(--green)}
+.v-home .bp .fl-l{line-height:1.2;margin-top:2px}
+.v-home .bp .fw{margin-bottom:4px}
+}
 </style>
 </head>
 <body>
