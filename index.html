@@ -10,7 +10,7 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#090D16;--surf:#1E293B;--ink:#F8FAFC;--mute:#94A3B8;--line:#334155;--green:#6366F1;--deep:#4F46E5;--hd:#818CF8;--link:#818CF8;--focus:#818CF8;--ongreen:#FFFFFF;--star:#FB923C;--tag:#FB923C;--tagink:#090D16}}
 :root[data-theme="dark"]{--bg:#090D16;--surf:#1E293B;--ink:#F8FAFC;--mute:#94A3B8;--line:#334155;--green:#6366F1;--deep:#4F46E5;--hd:#818CF8;--link:#818CF8;--focus:#818CF8;--ongreen:#FFFFFF;--star:#FB923C;--tag:#FB923C;--tagink:#090D16}
 *,*::before,*::after{box-sizing:inherit}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
 .wrap{max-width:1800px;margin:0 auto;padding:20px 16px 60px}
 h1{font-size:clamp(2.2rem,9vw,3.4rem);line-height:1;margin:0 0 8px;font-weight:800;letter-spacing:-.02em}
@@ -78,9 +78,15 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .tg{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surf);color:var(--ink);font-size:1.3rem;line-height:1;cursor:pointer;z-index:4;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 
 
+/* Mobile Back to Top button styling */
+.back-to-top{position:fixed;right:16px;bottom:calc(70px + env(safe-area-inset-bottom,0px));display:none;align-items:center;background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 6px;box-shadow:0 4px 12px rgba(0,0,0,0.15);cursor:pointer;z-index:1000;font-weight:600;font-size:0.85rem;gap:8px;transition:opacity 0.2s ease}
+.back-to-top .circle-icon{width:32px;height:32px;border-radius:50%;background:var(--green);color:var(--ongreen);display:flex;align-items:center;justify-content:center;font-size:1rem}
+@media(max-width:899px){.back-to-top.visible{display:flex}}
+
+
 /* Palette preview controls and theme tokens */
-.palette-toggle{position:fixed;right:14px;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:6;border:1px solid var(--line);background:var(--surf);color:var(--ink);border-radius:999px;padding:10px 14px;font:600 14px "Bricolage Grotesque",system-ui,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.16);cursor:pointer}
-.palette-panel{position:fixed;right:14px;bottom:calc(124px + env(safe-area-inset-bottom,0px));z-index:7;width:min(300px,calc(100vw - 28px));padding:14px;background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.22);display:none}
+.palette-toggle{position:fixed;right:14px;bottom:calc(126px + env(safe-area-inset-bottom,0px));z-index:6;border:1px solid var(--line);background:var(--surf);color:var(--ink);border-radius:999px;padding:10px 14px;font:600 14px "Bricolage Grotesque",system-ui,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.16);cursor:pointer}
+.palette-panel{position:fixed;right:14px;bottom:calc(180px + env(safe-area-inset-bottom,0px));z-index:7;width:min(300px,calc(100vw - 28px));padding:14px;background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.22);display:none}
 .palette-panel.open{display:block}
 .palette-panel h3{margin:0 0 4px;font-size:1rem}
 .palette-panel p{font-size:.82rem;color:var(--mute);margin:0 0 12px}
@@ -173,6 +179,7 @@ html:has(.v-home),body:has(.v-home){overflow:hidden}
 <body>
 <div class="wrap" id="app"></div>
 <button class="tg" id="tg" type="button"></button>
+<button class="back-to-top" id="backToTop" type="button"><span class="circle-icon">↑</span><span>Back to Top</span></button>
 <button class="palette-toggle" id="paletteToggle" type="button" aria-expanded="false">🎨 Theme</button>
 <section class="palette-panel" id="palettePanel" aria-label="Color palette chooser">
   <h3>Choose your palette</h3><p>Preview the same app in different visual styles.</p>
@@ -185,18 +192,47 @@ html:has(.v-home),body:has(.v-home){overflow:hidden}
 var STORES=[
  {n:"Dali",l:"Pasig City"},{n:"Puregold",l:"Ortigas Ave., Pasig City"},{n:"Shopwise",l:"Cainta, Rizal"},
  {n:"Robinsons Supermarket",l:"Ortigas, Pasig City"},{n:"SM Markets",l:"Megamall, Mandaluyong"}];
-// barcode, name, size, prices per store (null = not sold), ratings per store
+// barcode, name, size, prices per store, ratings per store, promos per store [{active, mechanics, start, end} or null]
 var P=[
- ["4800000000011","Century Tuna","155 g",[38,42,44,43,45],[4.1,4.4,4.2,4.3,4.5]],
- ["4800000000028","Sardines in tomato sauce","155 g",[17,18.5,19.5,19,19.75],[4.2,4.3,4.0,4.1,4.4]],
- ["4800000000035","Instant pancit canton","60 g",[14,15,15.5,15.5,16],[4.6,4.6,4.5,4.4,4.6]],
- ["4800000000042","Canned corned beef","150 g",[38,41,44,43,45],[3.9,4.1,4.0,4.0,4.2]],
- ["4800000000059","Evaporated milk","370 mL",[31,33,35,34,35.5],[4.3,4.4,4.2,4.3,4.5]],
- ["4800000000066","3-in-1 coffee","10 sachets",[null,72,76,75,77],[0,4.5,4.4,4.5,4.6]],
- ["4800000000073","Datu Puti","1 L",[34,37,39,38,40],[4.0,4.2,4.1,4.1,4.3]],
- ["4800000000080","Safeguard","90 g",[null,31,33,32,34],[0,4.4,4.3,4.4,4.5]],
- ["4809012906104","Amanda's Sweet Ginisang Bagoong","340 g",[85,92,95,90,96],[4.5,4.3,4.4,4.2,4.6]]];
-// details per product, same order as P (sample data)
+ ["4800000000011","Century Tuna","155 g",[38,42,44,43,45],[4.1,4.4,4.2,4.3,4.5],[
+   {active:true,mechanics:"Buy 1 get 1 free tag on selected stocks",start:"2026-11-01",end:"2026-12-31"},null,null,null,null
+ ]],
+ ["4800000000028","Sardines in tomato sauce","155 g",[17,18.5,19.5,19,19.75],[4.2,4.3,4.0,4.1,4.4],[
+   null,{active:true,mechanics:"₱2 off promo discount",start:"2026-11-05",end:"2026-11-20"},null,null,null
+ ]],
+ ["4800000000035","Instant pancit canton","60 g",[14,15,15.5,15.5,16],[4.6,4.6,4.5,4.4,4.6],[
+   null,null,{active:true,mechanics:"Bundle pack discount",start:"2026-10-15",end:"2026-11-30"},null,null
+ ]],
+ ["4800000000042","Canned corned beef","150 g",[38,41,44,43,45],[3.9,4.1,4.0,4.0,4.2],[
+   null,null,null,{active:true,mechanics:"Weekend special markdown",start:"2026-11-06",end:"2026-11-09"},null
+ ]],
+ ["4800000000059","Evaporated milk","370 mL",[31,33,35,34,35.5],[4.3,4.4,4.2,4.3,4.5],[
+   null,null,null,null,{active:true,mechanics:"Save ₱3 with loyalty card",start:"2026-11-01",end:"2026-12-01"}
+ ]],
+ ["4800000000066","3-in-1 coffee","10 sachets",[null,72,76,75,77],[0,4.5,4.4,4.5,4.6],[
+   null,{active:true,mechanics:"Free mug bundle",start:"2026-11-01",end:"2026-11-15"},null,null,null
+ ]],
+ ["4800000000073","Datu Puti","1 L",[34,37,39,38,40],[4.0,4.2,4.1,4.1,4.3],[
+   {active:true,mechanics:"Price rollback promo",start:"2026-11-02",end:"2026-11-25"},null,null,null,null
+ ]],
+ ["4800000000080","Safeguard","90 g",[null,31,33,32,34],[0,4.4,4.3,4.4,4.5],[
+   null,null,{active:true,mechanics:"Buy 3 save ₱5",start:"2026-11-04",end:"2026-11-18"},null,null
+ ]],
+ ["4809012906104","Amanda's Sweet Ginisang Bagoong","340 g",[85,92,95,90,96],[4.5,4.3,4.4,4.2,4.6],[
+   {active:true,mechanics:"Introductory discount",start:"2026-11-01",end:"2026-12-15"},null,null,{active:true,mechanics:"Bundle promo",start:"2026-11-01",end:"2026-11-10"},null
+ ]]];
+
+
+// Helper to check if a promo is currently valid based on end date
+function isPromoActive(promo){
+  if(!promo || !promo.active) return false;
+  if(!promo.end) return true;
+  var today = new Date().toISOString().split('T')[0];
+  return promo.end >= today;
+}
+
+
+// details per product, same order as P
 var M=[
  {n:"Century Tuna (Flakes in Oil)",b:"Century Tuna",m:"Century Pacific Food, Inc.",c:"Canned Goods, Seafood",o:"Philippines",t:["Century Tuna","Century Pacific Food, Inc.","Canned Goods","Seafood","Philippines"],col:"#2f6fb0"},
  {n:"555 Sardines (Tomato Sauce)",b:"555",m:"Century Pacific Food, Inc.",c:"Canned Goods, Seafood",o:"Philippines",t:["555","Century Pacific Food, Inc.","Canned Goods","Seafood","Philippines"],col:"#c0392b"},
@@ -213,13 +249,17 @@ function img(m){return '<svg viewBox="0 0 100 110" role="img" aria-label="Produc
 function revs(){var L=M[mi()].rv||RV;if(!L.length)return '<div class="r mute">No reviews yet.</div>';return L.map(function(r){return '<div class="r"><b>'+r[0]+'</b> <span class="stars">'+'★'.repeat(r[1])+'</span><br>'+r[2]+'</div>'}).join('')}
 var app=document.getElementById("app"),view="login",cur=null,store=null,msg="",stream=null,timer=null;
 var user={guest:true};
+var promoFilter=false; 
+var selectedArea=""; 
+
+
 function peso(n){return "₱"+(n%1?n.toFixed(2):n)}
 function stars(r){return r?"★ "+r.toFixed(1)+" / 5":"No rating yet"}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function stopScan(){if(timer){clearInterval(timer);timer=null}if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}}
-function go(v){stopScan();view=v;render();window.scrollTo(0,0)}
+function go(v){stopScan();view=v;selectedArea="";render();window.scrollTo(0,0)}
 function find(code){code=code.trim();var p=P.filter(function(x){return x[0]===code})[0];
-  if(p){cur=p;msg="";go("results")}else{msg="No product with barcode "+esc(code)+" yet. Check the digits or try a name search.";go("home")}}
+  if(p){cur=p;msg="";selectedArea="";go("results")}else{msg="No product with barcode "+esc(code)+" yet. Check the digits or try a name search.";go("home")}}
 function render(){
  var h="";
  if(view==="login"){
@@ -235,26 +275,74 @@ function render(){
   '<input type="file" id="barcodeUpload" accept="image/*" style="display:none"><button class="btn" data-a="upload-trigger">Upload barcode image</button>'+
   (msg?'<p class="msg" role="status">'+msg+'</p>':'')+
   '<form class="pair" data-a="code"><input class="in" id="code" inputmode="numeric" placeholder="Or type the barcode number" aria-label="Barcode number"><button class="btn" type="submit">Find</button></form>'+
+  '<button class="btn'+(promoFilter?' main':'')+'" data-a="toggle-promo">🔥 On Promo'+(promoFilter?' (Active)':'')+'</button>'+
   '<button class="btn" '+(user.guest?'disabled':'data-a="add"')+'>Add a product'+(user.guest?'<small>Log in to add products</small>':'')+'</button></section><section class="panel bp"><h3>Browse products</h3><input class="in" id="name" type="search" placeholder="Search by product name" aria-label="Search by name" value="'+esc(Q)+'">'+filters()+'</section></div><div class="main"><div id="hits">'+hits()+'</div></div></div>';
  }
  if(view==="results"){
-  var idx=[];P.indexOf(cur);cur[3].forEach(function(v,i){if(v!=null)idx.push(i)});
+  var idx=[];cur[3].forEach(function(v,i){if(v!=null)idx.push(i)});
+  if(selectedArea){
+    idx=idx.filter(function(i){return STORES[i].l.toLowerCase().includes(selectedArea.toLowerCase())});
+  }
   idx.sort(function(a,b){return cur[3][a]-cur[3][b]});
+  
+  var areas=[];STORES.forEach(function(s){if(!areas.includes(s.l))areas.push(s.l)}); areas.sort();
+
+
   h='<button class="link" data-a="home">‹ Back</button><h2>'+M[mi()].n+'</h2><p class="mute">'+cur[2]+' &bull; Barcode: <code>'+cur[0]+'</code></p>';
-  h+='<div class="grid">';idx.forEach(function(i,k){h+='<button class="item store" data-s="'+i+'"><b>'+STORES[i].n+'</b><span class="price'+(k===0?' min':'')+'">'+peso(cur[3][i])+'</span><small>'+STORES[i].l+'</small><span class="stars">'+stars(cur[4][i])+'</span></button>'});
-  h+='</div><p class="msg">Prices shown are sample data.</p>';
+  
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">'+
+     '<select class="in" id="areaFilter" style="margin:0;flex:1;min-width:200px" aria-label="Filter by area"><option value="">All Areas / Locations</option>'+
+     areas.map(function(a){return '<option value="'+esc(a)+'"'+(selectedArea===a?' selected':'')+'>'+esc(a)+'</option>'}).join('')+'</select>'+
+     '<button class="btn'+(promoFilter?' main':'')+'" data-a="toggle-promo" style="width:auto;margin:0;padding:10px 16px">🔥 On Promo'+(promoFilter?' (Active)':'')+'</button>'+
+     '</div>';
+
+
+  if(!idx.length){
+    h+='<p class="mute">No stores match the selected area filter.</p>';
+  } else {
+    h+='<div class="grid">';idx.forEach(function(i,k){
+      var promo=cur[5][i];
+      var hasValidPromo=isPromoActive(promo);
+      h+='<button class="item store" data-s="'+i+'"><b>'+STORES[i].n+' '+(hasValidPromo?'<span class="badge" style="background:#EF4444;color:#fff" title="'+esc(promo.mechanics)+' (Ends: '+promo.end+')">PROMO</span>':'')+'</b><span class="price'+(k===0?' min':'')+'">'+peso(cur[3][i])+'</span><small>'+STORES[i].l+'</small><span class="stars">'+stars(cur[4][i])+'</span></button>';
+    });
+    h+='</div>';
+  }
+  
+  // Display active promo mechanics summary if any store has a valid promo for this item
+  var activePromos = [];
+  cur[5].forEach(function(promo, i){
+    if(isPromoActive(promo) && (!selectedArea || STORES[i].l.toLowerCase().includes(selectedArea.toLowerCase()))){
+      activePromos.push('<b>'+STORES[i].n+' ('+STORES[i].l+'):</b> '+esc(promo.mechanics)+' (Valid until '+promo.end+')');
+    }
+  });
+  if(activePromos.length > 0){
+    h+='<div class="panel" style="margin-top:16px;background:var(--bg)"><h3>Active Promo Details</h3><ul style="margin:0;padding-left:18px;font-size:0.9rem">'+activePromos.map(function(ap){return '<li>'+ap+'</li>'}).join('')+'</ul></div>';
+  }
+
+
+  h+='<p class="msg" style="margin-top:14px">Prices shown are sample data.</p>';
  }
  if(view==="store"){
   var i=store,m=M[mi()];
+  var promo=cur[5][i];
+  var hasValidPromo=isPromoActive(promo);
   h='<button class="link" data-a="results">‹ Back to stores</button><h2>'+STORES[i].n+'</h2><p class="mute">'+STORES[i].l+'</p>'+
   '<div class="cols2"><div><div class="pimg">'+img(m)+'</div><h3 class="pn">'+m.n+'</h3>'+
   '<dl class="det"><dt>Brand Name</dt><dd>'+m.b+'</dd><dt>Parent Company / Manufacturer</dt><dd>'+m.m+'</dd><dt>Product Category</dt><dd>'+m.c+'</dd><dt>Country of Origin</dt><dd>'+m.o+'</dd><dt>Size / Weight</dt><dd>'+cur[2]+'</dd></dl>'+
   '<div class="price" style="text-align:left;font-size:2rem">'+peso(cur[3][i])+'</div><p class="stars">'+stars(cur[4][i])+'</p>'+
+  (hasValidPromo?'<div style="background:var(--tag);color:var(--tagink);padding:10px;border-radius:8px;margin-top:12px"><b>🔥 Active Promotion</b><br>'+esc(promo.mechanics)+'<br><small>Valid: '+promo.start+' to '+promo.end+'</small></div>':'')+
   '</div><div><h3>Reviews</h3><div class="rv"><div class="rvs'+(user.guest?' blur':'')+'" tabindex="0" aria-label="Product reviews">'+revs()+'</div>'+(user.guest?'<div class="ov"><span>Log in to read reviews</span></div>':'')+'</div>'+
   '<button class="btn" style="margin-top:16px" disabled>Send a price update</button><p class="msg">'+(user.guest?'Login with existing account to send a price update...':'Price updates are coming soon.')+'</p></div></div>';
  }
  if(view==="signin")h='<button class="link" data-a="back">‹ Back</button><h2>Log in</h2><p class="mute">Demo login for now: type any name. Passwords come later.</p><form data-a="signin"><input class="in" id="uname" maxlength="24" placeholder="Your name" aria-label="Your name" required><button class="btn main" type="submit">Log in</button></form>';
- if(view==="add")h='<button class="link" data-a="home">‹ Back</button><h2>Add a product</h2><p class="mute">Fill in what is on the shelf tag and the package.</p><form class="frm" data-a="add">'+bcbox()+fld("pn","Product name (include the variant)")+fld("pb","Brand name","","dl-b")+fld("pm","Parent company / manufacturer","","dl-m")+fld("pc","Product category (separate with commas)","","dl-c")+fld("po","Country of origin","","dl-o","Philippines")+fld("ps","Size / weight (for example 155 g)")+fld("st","Store name","","dl-s")+fld("sl","Store location (city or area)")+fld("pp","Current price (₱)","number")+'<label>Your rating<select class="in" id="rt"><option value="">No review yet</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label><label>Your review (optional)<textarea class="in" id="rv" rows="3"></textarea></label><button class="btn main" type="submit">Check and add product</button></form>'+dls();
+ if(view==="add")h='<button class="link" data-a="home">‹ Back</button><h2>Add a product</h2><p class="mute">Fill in what is on the shelf tag and the package.</p><form class="frm" data-a="add">'+bcbox()+fld("pn","Product name (include the variant)")+fld("pb","Brand name","","dl-b")+fld("pm","Parent company / manufacturer","","dl-m")+fld("pc","Product category (separate with commas)","","dl-c")+fld("po","Country of origin","","dl-o","Philippines")+fld("ps","Size / weight (for example 155 g)")+fld("st","Store name","","dl-s")+fld("sl","Store location (city or area)")+fld("pp","Current price (₱)","number")+
+  '<label style="display:flex;align-items:center;gap:8px;margin:12px 0;cursor:pointer"><input type="checkbox" id="hasPromo" style="width:20px;height:20px"><b>Is this item on promo?</b></label>'+
+  '<div id="promoFields" style="display:none;border:1px solid var(--line);padding:12px;border-radius:8px;margin-bottom:12px">'+
+    fld("pMech","Promo Mechanics (e.g., Buy 1 Take 1)")+
+    fld("pStart","Start Date","date")+
+    fld("pEnd","End Date","date")+
+  '</div>'+
+  '<label>Your rating<select class="in" id="rt"><option value="">No review yet</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label><label>Your review (optional)<textarea class="in" id="rv" rows="3"></textarea></label><button class="btn main" type="submit">Check and add product</button></form>'+dls();
  app.className="wrap v-"+view;app.innerHTML=h;
 }
 var F={b:"",m:"",c:"",o:""},Q="";
@@ -272,8 +360,8 @@ function fopen(k){var h='<div class="modal sheet" role="dialog" aria-modal="true
  app.insertAdjacentHTML("beforeend",h+'</div><button class="btn" data-a="dclose">Close</button></div></div>');var f1=app.querySelector(".modal .item");if(f1)f1.focus()}
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){var m=app.querySelector(".modal");if(m)m.remove()}});
 var COLS=["#2f6fb0","#c0392b","#2a8f5b","#7a4b2a","#8e44ad","#d35400"],pend=null;
-function V(id){return document.getElementById(id).value.trim().replace(/[<>"]/g,"")}
-function fld(id,l,t,dl,v){return '<label>'+l+'<input class="in" id="'+id+'" type="'+(t||"text")+'"'+(t==="number"?' step="0.01" min="0.01"':'')+(dl?' list="'+dl+'"':'')+' value="'+(v||'')+'" required></label>'}
+function V(id){var el=document.getElementById(id);return el?el.value.trim().replace(/[<>"]/g,""):""}
+function fld(id,l,t,dl,v){return '<label>'+l+'<input class="in" id="'+id+'" type="'+(t||"text")+'"'+(t==="number"?' step="0.01" min="0.01"':'')+(dl?' list="'+dl+'"':'')+' value="'+(v||'')+'"></label>'}
 function dls(){function u(f){var s=[];M.forEach(function(m){f(m).forEach(function(v){if(s.indexOf(v)<0)s.push(v)})});return s}
  function dl(id,a){return '<datalist id="'+id+'">'+a.sort().map(function(v){return '<option value="'+v+'">'}).join('')+'</datalist>'}
  return dl("dl-b",u(function(m){return [m.b]}))+dl("dl-m",u(function(m){return [m.m]}))+dl("dl-c",u(function(m){return m.c.split(", ")}))+dl("dl-o",u(function(m){return [m.o]}))+dl("dl-s",STORES.map(function(s){return s.n}).filter(function(v,i,a){return a.indexOf(v)===i}))}
@@ -283,6 +371,10 @@ function sidx(n,l){for(var i=0;i<STORES.length;i++)if(STORES[i].n.toLowerCase()=
 function where(i){return STORES.filter(function(_,s){return P[i][3][s]!=null}).map(function(s){return s.n+', '+s.l}).join('; ')}
 function tryAdd(){
  var d={code:V("bc"),n:V("pn"),b:V("pb"),m:V("pm"),c:V("pc").split(",").map(function(s){return s.trim()}).filter(Boolean).join(", "),o:V("po"),z:V("ps"),s:V("st"),l:V("sl"),p:parseFloat(V("pp")),r:+V("rt"),t:V("rv")};
+ var hasPromoChecked = document.getElementById("hasPromo").checked;
+ d.promo = hasPromoChecked ? {active:true, mechanics:V("pMech"), start:V("pStart"), end:V("pEnd")} : null;
+
+
  if(!(d.p>0)||!d.c)return;pend=d;
  d.j=d.code?P.map(function(p){return p[0]}).indexOf(d.code):-1;if(d.j>=0)return doAdd();
  var si=sidx(d.s,d.l),out=[];
@@ -293,17 +385,28 @@ function tryAdd(){
  out.forEach(function(o){var m=M[o.i];h+='<button class="item" data-c="'+P[o.i][0]+'"><b>'+m.n+'</b><small>'+P[o.i][2]+' · '+m.b+'</small><br>'+(o.at?'<span class="badge">Already listed at this store</span>':'<small>Sold at: '+where(o.i)+'</small>')+'</button>'});
  app.insertAdjacentHTML("beforeend",h+'</div><div class="btns"><button class="btn" data-a="dclose">Go back</button><button class="btn main" data-a="dadd">It’s different, add it</button></div></div></div>')}
 function doAdd(){var d=pend;if(!d)return;
- var si=sidx(d.s,d.l);if(si<0){STORES.push({n:d.s,l:d.l});si=STORES.length-1;P.forEach(function(p){p[3].push(null);p[4].push(0)})}
- if(d.j>=0){var q=P[d.j],mm=M[d.j];q[3][si]=d.p;if(d.r){q[4][si]=d.r;mm.rv=(mm.rv||RV).slice();mm.rv.unshift([user.name,d.r,d.t||"(no comment)"])}pend=null;cur=q;msg="";return go("results")}
- var pr=STORES.map(function(){return null}),rt=STORES.map(function(){return 0});pr[si]=d.p;rt[si]=d.r;
- P.push([d.code||"user-"+(P.length+1),d.n,d.z,pr,rt]);
+ var si=sidx(d.s,d.l);if(si<0){STORES.push({n:d.s,l:d.l});si=STORES.length-1;P.forEach(function(p){p[3].push(null);p[4].push(0);p[5].push(null)})}
+ if(d.j>=0){var q=P[d.j],mm=M[d.j];q[3][si]=d.p;q[5][si]=d.promo;if(d.r){q[4][si]=d.r;mm.rv=(mm.rv||RV).slice();mm.rv.unshift([user.name,d.r,d.t||"(no comment)"])}pend=null;cur=q;msg="";return go("results")}
+ var pr=STORES.map(function(){return null}),rt=STORES.map(function(){return 0}),proms=STORES.map(function(){return null});pr[si]=d.p;rt[si]=d.r;proms[si]=d.promo;
+ P.push([d.code||"user-"+(P.length+1),d.n,d.z,pr,rt,proms]);
  M.push({n:d.n,b:d.b,m:d.m,c:d.c,o:d.o,t:[d.b,d.m].concat(d.c.split(", "),[d.o]),col:COLS[P.length%COLS.length],rv:d.r?[[user.name,d.r,d.t||"(no comment)"]]:[]});
  pend=null;cur=P[P.length-1];msg="";go("results")}
-function hits(){var t=Q.toLowerCase(),o="";P.forEach(function(p,i){var m=M[i];
- if(!ok(m,""))return;
- if(t&&(m.n+' '+m.t.join(' ')).toLowerCase().indexOf(t)<0)return;
- o+='<button class="item" data-c="'+p[0]+'"><b>'+m.n+'</b><small>Tags: '+m.t.join(', ')+'</small></button>'});
- return o||'<p class="mute">No product matches. Try fewer filters or a shorter word.</p>'}
+function hits(){
+ var t=Q.toLowerCase(),o="";
+ P.forEach(function(p,i){
+  var m=M[i];
+  if(!ok(m,""))return;
+  if(t&&(m.n+' '+m.t.join(' ')).toLowerCase().indexOf(t)<0)return;
+  
+  var hasActivePromo=false;
+  p[5].forEach(function(pr){if(isPromoActive(pr))hasActivePromo=true;});
+  if(promoFilter && !hasActivePromo)return;
+
+
+  o+='<button class="item" data-c="'+p[0]+'"><b>'+m.n+' '+(hasActivePromo?'<span class="badge" style="background:#EF4444;color:#fff">PROMO</span>':'')+'</b><small>Tags: '+m.t.join(', ')+'</small></button>';
+ });
+ return o||'<p class="mute">No product matches. Try fewer filters or a shorter word.</p>';
+}
 function ok(m,x){return (x==="b"||!F.b||m.b===F.b)&&(x==="m"||!F.m||m.m===F.m)&&(x==="o"||!F.o||m.o===F.o)&&(x==="c"||!F.c||m.c.split(", ").indexOf(F.c)>=0)}
 function opts(k){var s=[];M.forEach(function(m){if(!ok(m,k))return;(k==="c"?m.c.split(", "):[m[k]]).forEach(function(v){if(s.indexOf(v)<0)s.push(v)})});s.sort();return s.map(function(v){return '<option'+(F[k]===v?' selected':'')+'>'+esc(v)+'</option>'}).join('')}
 function filters(){return '<div id="fl">'+fl()+'</div>'}
@@ -364,6 +467,7 @@ app.addEventListener("click",function(e){
  if(a==="dclose"){var md=app.querySelector(".modal");if(md)md.remove()}
  if(a==="results")go("results");
  if(a==="scan")scan();
+ if(a==="toggle-promo"){promoFilter=!promoFilter;render()}
  if(b.dataset.c)find(b.dataset.c);
  if(b.dataset.s!==undefined){store=+b.dataset.s;go("store")}
 });
@@ -376,6 +480,14 @@ document.addEventListener("change",function(e){
   handleBarcodeImage(e.target.files[0]);
   e.target.value = "";
  }
+ if(e.target.id==="areaFilter"){
+  selectedArea=e.target.value;
+  render();
+ }
+ if(e.target.id==="hasPromo"){
+  var pf=document.getElementById("promoFields");
+  if(pf) pf.style.display = e.target.checked ? "block" : "none";
+ }
 });
 app.addEventListener("submit",function(e){e.preventDefault();var a=e.target.dataset.a;
  if(a==="code"){var c=document.getElementById("code").value;if(c.trim())find(c)}
@@ -384,6 +496,22 @@ app.addEventListener("submit",function(e){e.preventDefault();var a=e.target.data
 app.addEventListener("input",function(e){if(e.target.id==="name"){Q=e.target.value;document.getElementById("hits").innerHTML=hits()}
  if(e.target.id==="fs"){var t=e.target.value.trim().toLowerCase(),n=0;app.querySelectorAll(".modal .list .item").forEach(function(b,i){var show=t?(i>0&&b.textContent.toLowerCase().indexOf(t)>=0):true;b.hidden=!show;if(show&&i>0)n++});document.getElementById("fnone").hidden=!t||n>0}});
 app.addEventListener("change",function(e){var k=e.target.dataset.f;if(k){F[k]=e.target.value;document.getElementById("fl").innerHTML=fl();var s=document.querySelector('[data-f="'+k+'"]');if(s)s.focus();document.getElementById("hits").innerHTML=hits()}});
+
+
+// Mobile Back to Top visibility and scroll logic
+var backToTopBtn=document.getElementById("backToTop");
+window.addEventListener("scroll",function(){
+  if(window.scrollY > 300){
+    backToTopBtn.classList.add("visible");
+  } else {
+    backToTopBtn.classList.remove("visible");
+  }
+});
+backToTopBtn.addEventListener("click",function(){
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+
 var th=null,mq=window.matchMedia("(prefers-color-scheme: dark)"),tg=document.getElementById("tg");
 try{th=localStorage.getItem("pc_theme")}catch(e){}
 function isDark(){var a=document.documentElement.getAttribute("data-theme");return a?a==="dark":mq.matches}
