@@ -192,7 +192,8 @@ var P=[
  ["4800000000059","Evaporated milk","370 mL",[31,33,35,34,35.5],[4.3,4.4,4.2,4.3,4.5]],
  ["4800000000066","3-in-1 coffee","10 sachets",[null,72,76,75,77],[0,4.5,4.4,4.5,4.6]],
  ["4800000000073","Datu Puti","1 L",[34,37,39,38,40],[4.0,4.2,4.1,4.1,4.3]],
- ["4800000000080","Safeguard","90 g",[null,31,33,32,34],[0,4.4,4.3,4.4,4.5]]];
+ ["4800000000080","Safeguard","90 g",[null,31,33,32,34],[0,4.4,4.3,4.4,4.5]],
+ ["4809012906104","Amanda's Sweet Ginisang Bagoong","340 g",[85,92,95,90,96],[4.5,4.3,4.4,4.2,4.6]]];
 // details per product, same order as P (sample data)
 var M=[
  {n:"Century Tuna (Flakes in Oil)",b:"Century Tuna",m:"Century Pacific Food, Inc.",c:"Canned Goods, Seafood",o:"Philippines",t:["Century Tuna","Century Pacific Food, Inc.","Canned Goods","Seafood","Philippines"],col:"#2f6fb0"},
@@ -202,7 +203,8 @@ var M=[
  {n:"Alaska Evaporated Milk",b:"Alaska",m:"Alaska Milk Corporation",c:"Dairy",o:"Philippines",t:["Alaska","Alaska Milk Corporation","Dairy","Canned Milk","Philippines"],col:"#2a8f5b"},
  {n:"Nescafé 3-in-1 (Original)",b:"Nescafé",m:"Nestlé Philippines, Inc.",c:"Coffee, Beverages",o:"Philippines",t:["Nescafé","Nestlé Philippines, Inc.","Beverages","Coffee","Philippines"],col:"#7a4b2a"},
  {n:"Datu Puti Soy Sauce",b:"Datu Puti",m:"NutriAsia, Inc.",c:"Condiments, Sauces",o:"Philippines",t:["Datu Puti","NutriAsia, Inc.","Condiments","Sauces","Philippines"],col:"#3b2a1f"},
- {n:"Safeguard Bar Soap (White)",b:"Safeguard",m:"Procter & Gamble Philippines",c:"Personal Care",o:"Philippines",t:["Safeguard","Procter & Gamble Philippines","Personal Care","Soap","Philippines"],col:"#3a7bd5"}];
+ {n:"Safeguard Bar Soap (White)",b:"Safeguard",m:"Procter & Gamble Philippines",c:"Personal Care",o:"Philippines",t:["Safeguard","Procter & Gamble Philippines","Personal Care","Soap","Philippines"],col:"#3a7bd5"},
+ {n:"Amanda's Sweet Ginisang Bagoong",b:"Amanda's",m:"Amanda's Marine Products",c:"Condiments, Sauces",o:"Philippines",t:["Amanda's","Amanda's Marine Products","Condiments","Sauces","Bagoong","Shrimp Paste","Philippines"],col:"#2a8f5b"}];
 var RV=[["Maria S.",5,"Always fresh and a good price. I buy it every payday."],["Jun R.",4,"Reliable quality. Sometimes sold out in the afternoon."],["Ate Liza",5,"Family favorite. Cheaper here than the corner store."],["Paolo D.",3,"Okay, but the price went up last month."],["Kuya Ben",4,"Good for the budget. Check the expiry date on the shelf."],["Carla M.",5,"Consistent every time."],["Rhea T.",4,"Easy to find, near the front aisle."]];
 function mi(){return P.indexOf(cur)}
 function img(m){return '<svg viewBox="0 0 100 110" role="img" aria-label="Product image placeholder"><rect x="15" y="15" width="70" height="80" rx="8" fill="'+m.col+'"/><ellipse cx="50" cy="15" rx="35" ry="7" fill="#d5dbd7"/><rect x="15" y="45" width="70" height="26" fill="#fff" opacity=".92"/><text x="50" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#16261c">'+esc(m.b)+'</text></svg>'}
@@ -234,7 +236,7 @@ function render(){
  if(view==="results"){
   var idx=[];P.indexOf(cur);cur[3].forEach(function(v,i){if(v!=null)idx.push(i)});
   idx.sort(function(a,b){return cur[3][a]-cur[3][b]});
-  h='<button class="link" data-a="home">‹ Back</button><h2>'+M[mi()].n+'</h2><p class="mute">'+cur[2]+'</p>';
+  h='<button class="link" data-a="home">‹ Back</button><h2>'+M[mi()].n+'</h2><p class="mute">'+cur[2]+' &bull; Barcode: <code>'+cur[0]+'</code></p>';
   h+='<div class="grid">';idx.forEach(function(i,k){h+='<button class="item store" data-s="'+i+'"><b>'+STORES[i].n+'</b><span class="price'+(k===0?' min':'')+'">'+peso(cur[3][i])+'</span><small>'+STORES[i].l+'</small><span class="stars">'+stars(cur[4][i])+'</span></button>'});
   h+='</div><p class="msg">Prices shown are sample data.</p>';
  }
