@@ -7,7 +7,7 @@ var P=[
    {active:true,mechanics:"Buy 1 get 1 free tag on selected stocks",until:"2026-12-31"},null,null,null,null
  ]],
  ["4800000000028","Sardines in tomato sauce","155 g",[17,18.5,19.5,19,19.75],[4.2,4.3,4.0,4.1,4.4],[
-   null,{active:true,mechanics:"₱2 off promo discount",until:"2026-11-20"},null,null,null
+   null,{active:true,mechanics:"₱2 off promo discount",until:"2026-11-20",mode:"price",price:16.5},null,null,null
  ]],
  ["4800000000035","Instant pancit canton","60 g",[14,15,15.5,15.5,16],[4.6,4.6,4.5,4.4,4.6],[
    null,null,{active:true,mechanics:"Bundle pack discount",until:"2026-11-30"},null,null
@@ -66,3 +66,23 @@ function isPromoActive(pr){return !!(pr&&pr.active&&(!pr.until||pr.until>=today(
 function fmtDate(s){var a=String(s).split("-");return new Date(+a[0],a[1]-1,+a[2]).toLocaleDateString("en-PH",{month:"short",day:"numeric",year:"numeric"})}
 function img(m){return '<svg viewBox="0 0 100 110" role="img" aria-label="Product image placeholder"><rect x="15" y="15" width="70" height="80" rx="8" fill="'+m.col+'"/><ellipse cx="50" cy="15" rx="35" ry="7" fill="#d5dbd7"/><rect x="15" y="45" width="70" height="26" fill="#fff" opacity=".92"/><text x="50" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#16261c">'+esc(m.b)+'</text></svg>'}
 function revs(m){var L=m.rv||RV;if(!L.length)return '<div class="r mute">No reviews yet.</div>';return L.map(function(r){return '<div class="r"><b>'+esc(r[0])+'</b> <span class="stars">'+'★'.repeat(r[1])+'</span><br>'+esc(r[2])+'</div>'}).join('')}
+
+// ---------- promo pricing + promo form (shared by index.html and product.html) ----------
+function promoPrice(pr,orig){return(isPromoActive(pr)&&pr.price!=null&&pr.price<orig)?pr.price:null}
+function effPrice(p,s){var x=promoPrice(p[5][s],p[3][s]);return x!=null?x:p[3][s]}
+function priceHTML(p,s){var x=promoPrice(p[5][s],p[3][s]);return x!=null?'<s class="old">'+peso(p[3][s])+'</s> <span class="now">'+peso(x)+'</span>':peso(p[3][s])}
+function promoFields(){return '<label>Promo mechanics<input class="in" id="pMech" maxlength="80" placeholder="e.g., Buy 1 Take 1"></label>'+
+ '<label>Promo valid until<input class="in" id="pUntil" type="date" min="'+today()+'"></label>'+
+ '<fieldset class="pm"><legend>Promo price</legend><label class="rd"><input type="radio" name="pMode" value="same" checked> Same price</label><label class="rd"><input type="radio" name="pMode" value="price"> New price</label><label class="rd"><input type="radio" name="pMode" value="pct"> Percent off</label>'+
+ '<label id="pPriceW" hidden>Promo price (₱)<input class="in" id="pPrice" type="number" step="0.01" min="0.01"></label><label id="pPctW" hidden>Percent off (%)<input class="in" id="pPct" type="number" step="1" min="1" max="99"></label></fieldset>'+
+ '<p class="msg" id="perr" role="alert"></p>'}
+function readPromo(orig,by){var mech=V("pMech"),u=V("pUntil"),c=document.querySelector('input[name="pMode"]:checked'),mode=c?c.value:"same";
+ if(!mech||!u)return{e:"Add the promo mechanics and the until date."};
+ if(u<today())return{e:"The until date can’t be in the past."};
+ var pr={active:true,mechanics:mech,until:u,by:by,mode:mode,price:null};
+ if(mode==="price"){var x=parseFloat(V("pPrice"));if(!(x>0))return{e:"Enter the promo price."};if(orig&&x>=orig)return{e:"The promo price must be lower than the regular price (₱"+orig+"). Choose “Same price” if it didn’t change."};pr.price=Math.round(x*100)/100}
+ if(mode==="pct"){var q=parseFloat(V("pPct"));if(!(orig>0))return{e:"Enter the regular price first."};if(!(q>0&&q<100))return{e:"Enter a percentage between 1 and 99."};pr.pct=q;pr.price=Math.round(orig*(1-q/100)*100)/100}
+ return{p:pr}}
+document.addEventListener("change",function(e){if(e.target.name==="pMode"){var a=document.getElementById("pPriceW"),b=document.getElementById("pPctW");if(a)a.hidden=e.target.value!=="price";if(b)b.hidden=e.target.value!=="pct"}});
+// promos are removed automatically once their "until" date has passed
+(function(){var ch=false;P.forEach(function(r){(r[5]||[]).forEach(function(pr,i){if(pr&&pr.until&&pr.until<today()){r[5][i]=null;ch=true}})});if(ch)saveDB()})();

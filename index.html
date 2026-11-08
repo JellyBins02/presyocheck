@@ -39,9 +39,7 @@ function render(){
  if(view==="add")h='<button class="link" data-a="home">‹ Back</button><h2>Add a product</h2><p class="mute">Fill in what is on the shelf tag and the package.</p><form class="frm" data-a="add">'+bcbox()+fld("pn","Product name (include the variant)")+fld("pb","Brand name","","dl-b")+fld("pm","Parent company / manufacturer","","dl-m")+fld("pc","Product category (separate with commas)","","dl-c")+fld("po","Country of origin","","dl-o","Philippines")+fld("ps","Size / weight (for example 155 g)")+fld("st","Store name","","dl-s")+fld("sl","Store location (city or area)")+fld("pp","Current price (₱)","number")+
   '<label style="display:flex;align-items:center;gap:8px;margin:12px 0;cursor:pointer"><input type="checkbox" id="hasPromo" style="width:20px;height:20px"><b>Is this item on promo?</b></label>'+
   '<div id="promoFields" style="display:none;border:1px solid var(--line);padding:12px;border-radius:8px;margin-bottom:12px">'+
-    fld("pMech","Promo Mechanics (e.g., Buy 1 Take 1)")+
-    fld("pUntil","Promo valid until","date")+
-    '<p class="msg" id="perr" role="alert"></p>'+
+    promoFields()+
   '</div>'+
   '<label>Your rating<select class="in" id="rt"><option value="">No review yet</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label><label>Your review (optional)<textarea class="in" id="rv" rows="3"></textarea></label><button class="btn main" type="submit">Check and add product</button></form>'+dls();
  app.className="wrap v-"+view;app.innerHTML=h;
@@ -73,10 +71,9 @@ function where(i){return STORES.filter(function(_,s){return P[i][3][s]!=null}).m
 function tryAdd(){
  var d={code:V("bc"),n:V("pn"),b:V("pb"),m:V("pm"),c:V("pc").split(",").map(function(s){return s.trim()}).filter(Boolean).join(", "),o:V("po"),z:V("ps"),s:V("st"),l:V("sl"),p:parseFloat(V("pp")),r:+V("rt"),t:V("rv")};
  d.promo=null;
- if(document.getElementById("hasPromo").checked){var pm=V("pMech"),pu=V("pUntil"),er=document.getElementById("perr");
-  if(!pm||!pu){er.textContent="Add the promo mechanics and the until date.";return}
-  if(pu<today()){er.textContent="The until date can’t be in the past.";return}
-  er.textContent="";d.promo={active:true,mechanics:pm,until:pu,by:user.name}}
+ if(document.getElementById("hasPromo").checked){var rp=readPromo(d.p,user.name),er=document.getElementById("perr");
+  if(rp.e){er.textContent=rp.e;return}
+  er.textContent="";d.promo=rp.p}
 
 
  if(!(d.p>0)||!d.c)return;pend=d;

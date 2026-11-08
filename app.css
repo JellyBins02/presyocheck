@@ -170,3 +170,7 @@ html:has(.v-home),body:has(.v-home){overflow:hidden}
 a.link{display:inline-block;text-decoration:none}a.item{text-decoration:none;color:inherit}a.btn{text-decoration:none;color:inherit}
 .promo-box{background:var(--tag);color:var(--tagink);padding:10px 12px;border-radius:8px;margin-top:12px}
 .frm .in{margin-bottom:8px}
+.old{color:var(--mute);font-weight:400;font-size:.8em;margin-right:2px}.price.min .old{color:inherit;opacity:.7}
+[hidden]{display:none!important}
+fieldset.pm{border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:0 0 8px}.pm legend{font-size:.85rem;color:var(--mute);padding:0 4px}
+.rd{display:inline-flex!important;align-items:center;gap:6px;margin-right:14px;color:var(--ink)!important;font-size:.95rem!important}.rd input{width:18px;height:18px;accent-color:var(--green);margin:0}
