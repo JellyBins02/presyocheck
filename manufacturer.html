@@ -11,18 +11,33 @@
 <div class="wrap" id="app"></div>
 <script src="shared.js"></script>
 <script>
-var app=document.getElementById("app"),name=qs("name");
+var app=document.getElementById("app"),name=qs("name"),fs="",fl="",so="";
 function plural(n,w){return n+" "+w+(n===1?"":"s")}
+var g={};M.forEach(function(m,i){(g[m.m]=g[m.m]||[]).push(i)});
+function uniq(a){return a.filter(function(v,i){return a.indexOf(v)===i}).sort()}
+function brands(ids){return uniq(ids.map(function(i){return M[i].b})).join(", ")}
+function listings(){var o=[];g[name].forEach(function(i){P[i][3].forEach(function(v,s){if(v!=null)o.push({i:i,s:s,v:effPrice(P[i],s)})})});return o}
+function update(){
+ var L=listings().filter(function(x){return(!fs||STORES[x.s].n===fs)&&(!fl||STORES[x.s].l===fl)}),by={};
+ L.forEach(function(x){(by[x.i]=by[x.i]||[]).push(x)});
+ var ks=Object.keys(by).map(Number);
+ if(so){ks.forEach(function(k){by[k].sort(function(a,b){return so==="asc"?a.v-b.v:b.v-a.v})});ks.sort(function(a,b){return so==="asc"?by[a][0].v-by[b][0].v:by[b][0].v-by[a][0].v})}
+ document.getElementById("res").innerHTML=ks.length?ks.map(function(i){var m=M[i],p=P[i];
+  return '<section class="panel"><a class="tl" href="'+urlCompare(p[0])+'"><b>'+esc(m.n)+'</b></a> <span class="mute">'+esc(p[2])+' · '+esc(m.b)+'</span><div class="grid" style="margin-top:10px">'+by[i].map(function(x){
+   return '<a class="item store" href="'+urlProduct(p[0],x.s)+'"><b>'+esc(STORES[x.s].n)+'</b><span class="price">'+priceHTML(p,x.s)+'</span><small>'+esc(locName(x.s))+'</small><span class="stars">'+stars(p[4][x.s])+'</span></a>'}).join('')+'</div></section>'}).join(''):'<p class="mute">No listings match these filters.</p>'}
 function render(){
- var h=navbar("mfr"),g={};M.forEach(function(m,i){(g[m.m]=g[m.m]||[]).push(i)});
- function brands(ids){var b=[];ids.forEach(function(i){if(b.indexOf(M[i].b)<0)b.push(M[i].b)});return b.join(", ")}
+ var h=navbar("mfr");
  if(!name){document.title="Manufacturers | Presyo Check";
-  h+='<h2>Manufacturers</h2><p class="mute">Tap a manufacturer to see every product listed under it.</p><div class="grid">'+Object.keys(g).sort().map(function(n){return '<a class="item" href="'+urlMfr(n)+'"><b>'+esc(n)+'</b><small>'+plural(g[n].length,"product")+' · '+esc(brands(g[n]))+'</small></a>'}).join('')+'</div>'}
+  h+='<h2>Manufacturers</h2><p class="mute">Tap a manufacturer to see its products and compare them across stores.</p><div class="grid">'+Object.keys(g).sort().map(function(n){return '<a class="item" href="'+urlMfr(n)+'"><b>'+esc(n)+'</b><small>'+plural(g[n].length,"product")+' · '+esc(brands(g[n]))+'</small></a>'}).join('')+'</div>'}
  else if(!g[name]){h+='<a class="link" href="manufacturer.html">‹ All manufacturers</a><h2>Manufacturer not found</h2><p class="mute">No products are listed for “'+esc(name)+'” yet.</p>'}
- else{var ids=g[name];document.title=name+" | Presyo Check";
-  h+='<a class="link" href="manufacturer.html">‹ All manufacturers</a><h2>'+esc(name)+'</h2><p class="mute">'+plural(ids.length,"product")+' · Brands: '+esc(brands(ids))+'</p><div class="grid">'+ids.map(function(i){var m=M[i],lo=lowest(i);
-   return '<a class="item" href="'+urlCompare(P[i][0])+'"><b>'+esc(m.n)+'</b><small>'+esc(P[i][2])+' · '+esc(m.b)+'</small><br><span class="price" style="font-size:1rem">'+(lo!=null?'From '+peso(lo):'No price yet')+'</span></a>'}).join('')+'</div>'}
- app.innerHTML=h}
+ else{document.title=name+" | Presyo Check";var L=listings();
+  function opt(a,cur,all){return '<option value="">'+all+'</option>'+a.map(function(v){return '<option value="'+esc(v)+'"'+(cur===v?' selected':'')+'>'+esc(v)+'</option>'}).join('')}
+  h+='<a class="link" href="manufacturer.html">‹ All manufacturers</a><h2>'+esc(name)+'</h2><p class="mute">'+plural(g[name].length,"product")+' · Brands: '+esc(brands(g[name]))+'</p>'+
+  '<div class="flt" style="margin-bottom:14px"><label>Store<select class="in" id="fStore">'+opt(uniq(L.map(function(x){return STORES[x.s].n})),fs,"All stores")+'</select></label>'+
+  '<label>Location<select class="in" id="fLoc">'+opt(uniq(L.map(function(x){return STORES[x.s].l})),fl,"All locations")+'</select></label>'+
+  '<label>Price<select class="in" id="fSort"><option value="">Default order</option><option value="asc">Lowest to highest</option><option value="desc">Highest to lowest</option></select></label></div><div id="res"></div>'}
+ app.innerHTML=h;if(name&&g[name])update()}
+app.addEventListener("change",function(e){var i=e.target.id;if(i==="fStore")fs=e.target.value;else if(i==="fLoc")fl=e.target.value;else if(i==="fSort")so=e.target.value;else return;update()});
 render();
 </script>
 <script src="theme.js"></script>

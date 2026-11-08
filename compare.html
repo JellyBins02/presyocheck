@@ -11,7 +11,7 @@
 <div class="wrap" id="app"></div>
 <script src="shared.js"></script>
 <script>
-var p=findP(qs("code")),area="",promoOnly=getPromoFilter(),app=document.getElementById("app");
+var p=findP(qs("code")),area=qs("area")||"",promoOnly=getPromoFilter(),app=document.getElementById("app");
 function render(){
  var h=navbar("")+'<a class="link" href="index.html">‹ Back to home</a>';
  if(!p){app.innerHTML=h+'<h2>Product not found</h2><p class="mute">We couldn’t find that product. It may have been added on another device.</p>';return}
@@ -24,8 +24,8 @@ function render(){
  '<button class="btn'+(promoOnly?' main':'')+'" data-a="promo" style="width:auto;margin:0;padding:10px 16px">🔥 On Promo'+(promoOnly?' (Active)':'')+'</button></div>';
  if(!idx.length)h+='<p class="mute">No stores match the selected promo and area filters.</p>';
  else{h+='<div class="grid">';idx.forEach(function(i,k){var pr=p[5][i];
-  h+='<a class="item store" href="'+urlProduct(p[0],i)+'"><b>'+esc(STORES[i].n)+' '+(isPromoActive(pr)?'<span class="badge" style="background:#EF4444;color:#fff" title="'+esc(pr.mechanics)+' (until '+fmtDate(pr.until)+')">PROMO</span>':'')+'</b><span class="price'+(k===0?' min':'')+'">'+priceHTML(p,i)+'</span><small>'+esc(STORES[i].l)+'</small><span class="stars">'+stars(p[4][i])+'</span></a>'});h+='</div>'}
- var ap=[];p[5].forEach(function(pr,i){if(isPromoActive(pr)&&(!area||STORES[i].l.toLowerCase().indexOf(area.toLowerCase())>=0))ap.push('<li><b>'+esc(STORES[i].n)+' ('+esc(STORES[i].l)+'):</b> '+esc(pr.mechanics)+' (Until '+fmtDate(pr.until)+')</li>')});
+  h+='<a class="item store" href="'+urlProduct(p[0],i)+'"><b>'+esc(STORES[i].n)+' '+(isPromoActive(pr)?'<span class="badge" style="background:#EF4444;color:#fff" title="'+esc(pr.mechanics)+' (until '+fmtDate(pr.until)+')">PROMO</span>':'')+'</b><span class="price'+(k===0?' min':'')+'">'+priceHTML(p,i)+'</span><small>'+esc(locName(i))+'</small><span class="stars">'+stars(p[4][i])+'</span></a>'});h+='</div>'}
+ var ap=[];p[5].forEach(function(pr,i){if(isPromoActive(pr)&&(!area||STORES[i].l.toLowerCase().indexOf(area.toLowerCase())>=0))ap.push('<li><b>'+esc(STORES[i].n)+' ('+esc(locName(i))+'):</b> '+esc(pr.mechanics)+' (Until '+fmtDate(pr.until)+')</li>')});
  if(ap.length)h+='<div class="panel" style="margin-top:16px;background:var(--bg)"><h3>Active Promo Details</h3><ul style="margin:0;padding-left:18px;font-size:.9rem">'+ap.join('')+'</ul></div>';
  app.innerHTML=h+'<p class="msg" style="margin-top:14px">Prices shown are sample data.</p>';
 }

@@ -36,12 +36,12 @@ function render(){
   '<button class="btn" '+(user.guest?'disabled':'data-a="add"')+'>Add a product'+(user.guest?'<small>Log in to add products</small>':'')+'</button></section><section class="panel bp"><h3>Browse products</h3><input class="in" id="name" type="search" placeholder="Search by product name" aria-label="Search by name" value="'+esc(Q)+'">'+filters()+'</section></div><div class="main"><div id="hits">'+hits()+'</div></div></div>';
  }
  if(view==="signin")h='<button class="link" data-a="back">‹ Back</button><h2>Log in</h2><p class="mute">Demo login for now: type any name. Passwords come later.</p><form data-a="signin"><input class="in" id="uname" maxlength="24" placeholder="Your name" aria-label="Your name" required><button class="btn main" type="submit">Log in</button></form>';
- if(view==="add")h='<button class="link" data-a="home">‹ Back</button><h2>Add a product</h2><p class="mute">Fill in what is on the shelf tag and the package.</p><form class="frm" data-a="add">'+bcbox()+fld("pn","Product name (include the variant)")+fld("pb","Brand name","","dl-b")+fld("pm","Parent company / manufacturer","","dl-m")+fld("pc","Product category (separate with commas)","","dl-c")+fld("po","Country of origin","","dl-o","Philippines")+fld("ps","Size / weight (for example 155 g)")+fld("st","Store name","","dl-s")+fld("sl","Store location (city or area)")+fld("pp","Current price (₱)","number")+
+ if(view==="add")h='<button class="link" data-a="home">‹ Back</button><h2>Add a product</h2><p class="mute">Fill in what is on the shelf tag and the package.</p><form class="frm" data-a="add">'+bcbox()+fld("pn","Product name (include the variant)")+fld("pb","Brand name","","dl-b")+fld("pm","Parent company / manufacturer","","dl-m")+fld("pc","Product category (separate with commas)","","dl-c")+fld("po","Country of origin","","dl-o","Philippines")+fld("ps","Size / weight (for example 155 g)")+fld("st","Store name","","dl-s")+fld("sl","City / area (for example, Makati)")+fld("sb","Branch, landmark or street (for example, Inside Ayala Malls Circuit, or Pablo Ocampo St.)")+fld("pp","Current price (₱)","number")+
   '<label style="display:flex;align-items:center;gap:8px;margin:12px 0;cursor:pointer"><input type="checkbox" id="hasPromo" style="width:20px;height:20px"><b>Is this item on promo?</b></label>'+
   '<div id="promoFields" style="display:none;border:1px solid var(--line);padding:12px;border-radius:8px;margin-bottom:12px">'+
     promoFields()+
   '</div>'+
-  '<label>Your rating<select class="in" id="rt"><option value="">No review yet</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label><label>Your review (optional)<textarea class="in" id="rv" rows="3"></textarea></label><button class="btn main" type="submit">Check and add product</button></form>'+dls();
+  '<label>Your rating<select class="in" id="rt"><option value="">No review yet</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label><label>Your review (optional)<textarea class="in" id="rv" rows="3"></textarea></label><p class="msg" id="aerr" role="alert"></p><button class="btn main" type="submit">Check and add product</button></form>'+dls();
  app.className="wrap v-"+view;app.innerHTML=((view==="home"||view==="add")?navbar("home"):"")+h;
 }
 var F={b:"",m:"",c:"",o:""},Q="";
@@ -66,27 +66,28 @@ function dls(){function u(f){var s=[];M.forEach(function(m){f(m).forEach(functio
  return dl("dl-b",u(function(m){return [m.b]}))+dl("dl-m",u(function(m){return [m.m]}))+dl("dl-c",u(function(m){return m.c.split(", ")}))+dl("dl-o",u(function(m){return [m.o]}))+dl("dl-s",STORES.map(function(s){return s.n}).filter(function(v,i,a){return a.indexOf(v)===i}))}
 function norm(s){return s.toLowerCase().replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(function(w,i,a){return w&&a.indexOf(w)===i})}
 function sim(a,b){var x=norm(a),y=norm(b),n=x.filter(function(w){return y.indexOf(w)>=0}).length,u=x.length+y.length-n;return u?n/u:0}
-function sidx(n,l){for(var i=0;i<STORES.length;i++)if(STORES[i].n.toLowerCase()===n.toLowerCase()&&STORES[i].l.toLowerCase()===l.toLowerCase())return i;return -1}
-function where(i){return STORES.filter(function(_,s){return P[i][3][s]!=null}).map(function(s){return s.n+', '+s.l}).join('; ')}
+function sidx(n,l,b){b=(b||"").toLowerCase();for(var i=0;i<STORES.length;i++)if(STORES[i].n.toLowerCase()===n.toLowerCase()&&STORES[i].l.toLowerCase()===l.toLowerCase()&&(STORES[i].b||"").toLowerCase()===b)return i;return -1}
+function where(i){return STORES.map(function(s,k){return P[i][3][k]!=null?s.n+" ("+locName(k)+")":null}).filter(Boolean).join("; ")}
 function tryAdd(){
- var d={code:V("bc"),n:V("pn"),b:V("pb"),m:V("pm"),c:V("pc").split(",").map(function(s){return s.trim()}).filter(Boolean).join(", "),o:V("po"),z:V("ps"),s:V("st"),l:V("sl"),p:parseFloat(V("pp")),r:+V("rt"),t:V("rv")};
+ var d={code:V("bc"),n:V("pn"),b:V("pb"),m:V("pm"),c:V("pc").split(",").map(function(s){return s.trim()}).filter(Boolean).join(", "),o:V("po"),z:V("ps"),s:V("st"),l:V("sl"),br:V("sb"),p:parseFloat(V("pp")),r:+V("rt"),t:V("rv")};
  d.promo=null;
  if(document.getElementById("hasPromo").checked){var rp=readPromo(d.p,user.name),er=document.getElementById("perr");
   if(rp.e){er.textContent=rp.e;return}
   er.textContent="";d.promo=rp.p}
 
 
- if(!(d.p>0)||!d.c)return;pend=d;
+ var miss=[];if(!d.n)miss.push("product name");if(!d.b)miss.push("brand");if(!d.c)miss.push("category");if(!d.s)miss.push("store name");if(!d.l)miss.push("city / area");if(!d.br)miss.push("branch or street");if(!(d.p>0))miss.push("price");
+ var ae=document.getElementById("aerr");if(miss.length){ae.textContent="Please fill in: "+miss.join(", ")+".";return}ae.textContent="";pend=d;
  d.j=d.code?P.map(function(p){return p[0]}).indexOf(d.code):-1;if(d.j>=0)return doAdd();
- var si=sidx(d.s,d.l),out=[];
+ var si=sidx(d.s,d.l,d.br),out=[];
  P.forEach(function(p,i){var sc=sim(d.b+" "+d.n,M[i].b+" "+M[i].n);if(sc>=0.45){var at=si>=0&&p[3][si]!=null;out.push({i:i,at:at,sc:sc+(at?1:0)})}});
  out.sort(function(a,b){return b.sc-a.sc});
  if(!out.length)return doAdd();
- var h='<div class="modal" role="dialog" aria-modal="true" aria-label="Possible duplicate"><div class="dlg"><h2>This may already exist</h2><p class="mute">Scroll through these similar products before adding “'+d.n+'” at '+d.s+', '+d.l+'. Tap one to view it.</p><div class="list">';
+ var h='<div class="modal" role="dialog" aria-modal="true" aria-label="Possible duplicate"><div class="dlg"><h2>This may already exist</h2><p class="mute">Scroll through these similar products before adding “'+d.n+'” at '+d.s+' ('+d.br+', '+d.l+'). Tap one to view it.</p><div class="list">';
  out.forEach(function(o){var m=M[o.i];h+='<button class="item" data-c="'+P[o.i][0]+'"><b>'+m.n+'</b><small>'+P[o.i][2]+' · '+m.b+'</small><br>'+(o.at?'<span class="badge">Already listed at this store</span>':'<small>Sold at: '+where(o.i)+'</small>')+'</button>'});
  app.insertAdjacentHTML("beforeend",h+'</div><div class="btns"><button class="btn" data-a="dclose">Go back</button><button class="btn main" data-a="dadd">It’s different, add it</button></div></div></div>')}
 function doAdd(){var d=pend;if(!d)return;
- var si=sidx(d.s,d.l);if(si<0){STORES.push({n:d.s,l:d.l});si=STORES.length-1;P.forEach(function(p){p[3].push(null);p[4].push(0);p[5].push(null)})}
+ var si=sidx(d.s,d.l,d.br);if(si<0){STORES.push({n:d.s,l:d.l,b:d.br});si=STORES.length-1;P.forEach(function(p){p[3].push(null);p[4].push(0);p[5].push(null)})}
  if(d.j>=0){var q=P[d.j],mm=M[d.j];q[3][si]=d.p;if(d.promo)q[5][si]=d.promo;if(d.r){q[4][si]=d.r;mm.rv=(mm.rv||RV).slice();mm.rv.unshift([user.name,d.r,d.t||"(no comment)"])}pend=null;saveDB();location.href=urlCompare(q[0]);return}
  var pr=STORES.map(function(){return null}),rt=STORES.map(function(){return 0}),proms=STORES.map(function(){return null});pr[si]=d.p;rt[si]=d.r;proms[si]=d.promo;
  P.push([d.code||"user-"+(P.length+1),d.n,d.z,pr,rt,proms]);

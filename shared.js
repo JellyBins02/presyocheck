@@ -93,3 +93,5 @@ function urlStore(n){return "store.html?name="+encodeURIComponent(n)}
 function navbar(a){var L=[["home","index.html","Home"],["mfr","manufacturer.html","Manufacturers"],["store","store.html","Stores"]];
  return '<nav class="nav" aria-label="Main"><span class="brand">Presyo Check</span>'+L.map(function(l){return '<a href="'+l[1]+'"'+(l[0]===a?' aria-current="page"':'')+'>'+l[2]+'</a>'}).join('')+'</nav>'}
 function lowest(i){var v=null;P[i][3].forEach(function(x,s){if(x!=null){var e=effPrice(P[i],s);if(v==null||e<v)v=e}});return v}
+
+function locName(i){var s=STORES[i];return(s.b?s.b+", ":"")+s.l}
