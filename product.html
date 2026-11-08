@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Presyo Check</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script src="shared.js"></script>
+<script>
+var p=findP(qs("code")),s=+qs("s"),app=document.getElementById("app"),note="";
+function render(){
+ if(!p||!(p[3][s]!=null)){app.innerHTML='<a class="link" href="index.html">‹ Back to home</a><h2>Listing not found</h2><p class="mute">We couldn’t find that product at that store.</p>';return}
+ var m=M[P.indexOf(p)],pr=p[5][s],act=isPromoActive(pr),g=user.guest;document.title=m.n+" at "+STORES[s].n+" | Presyo Check";
+ var promoUI=g?'<p class="mute">Log in to tag this product as on promo.</p><a class="btn" href="index.html#signin">Log in</a>':
+  '<form class="frm" data-a="promo"><label>Promo mechanics<input class="in" id="pMech" placeholder="e.g., Buy 1 Take 1" maxlength="80" value="'+(act?esc(pr.mechanics):'')+'" required></label><label>Until when<input class="in" id="pUntil" type="date" min="'+today()+'" value="'+(act?pr.until:'')+'" required></label><p class="msg" id="perr" role="alert">'+note+'</p><button class="btn main" type="submit">'+(act?'Update promo':'Tag as on promo')+'</button>'+(act?'<button class="btn" type="button" data-a="unpromo">Remove promo tag</button>':'')+'</form>';
+ app.innerHTML='<a class="link" href="'+urlCompare(p[0])+'">‹ Back to stores</a><h2>'+esc(STORES[s].n)+'</h2><p class="mute">'+esc(STORES[s].l)+'</p>'+
+ '<div class="cols2"><div><div class="pimg">'+img(m)+'</div><h3 class="pn">'+esc(m.n)+'</h3>'+
+ '<dl class="det"><dt>Brand Name</dt><dd>'+esc(m.b)+'</dd><dt>Parent Company / Manufacturer</dt><dd>'+esc(m.m)+'</dd><dt>Product Category</dt><dd>'+esc(m.c)+'</dd><dt>Country of Origin</dt><dd>'+esc(m.o)+'</dd><dt>Size / Weight</dt><dd>'+esc(p[2])+'</dd></dl>'+
+ '<div class="price" style="text-align:left;font-size:2rem">'+peso(p[3][s])+'</div><p class="stars">'+stars(p[4][s])+'</p>'+
+ (act?'<div class="promo-box"><b>🔥 Active promotion</b><br>'+esc(pr.mechanics)+'<br><small>Until '+fmtDate(pr.until)+(pr.by?' · tagged by '+esc(pr.by):'')+'</small></div>':'')+'</div>'+
+ '<div><h3>Reviews</h3><div class="rv"><div class="rvs'+(g?' blur':'')+'" tabindex="0" aria-label="Product reviews">'+revs(m)+'</div>'+(g?'<div class="ov"><span>Log in to read reviews</span></div>':'')+'</div>'+
+ '<h3>Promo</h3><div class="panel">'+promoUI+'</div>'+
+ '<button class="btn" style="margin-top:16px" disabled>Send a price update</button><p class="msg">'+(g?'Login with existing account to send a price update...':'Price updates are coming soon.')+'</p></div></div>';
+}
+app.addEventListener("submit",function(e){e.preventDefault();if(e.target.dataset.a!=="promo"||user.guest)return;
+ var mech=V("pMech"),u=V("pUntil"),er=document.getElementById("perr");
+ if(!mech||!u){er.textContent="Add the promo mechanics and the until date.";return}
+ if(u<today()){er.textContent="The until date can’t be in the past.";return}
+ p[5][s]={active:true,mechanics:mech,until:u,by:user.name};saveDB();note="Promo saved. Thank you!";render()});
+app.addEventListener("click",function(e){var b=e.target.closest("button");if(b&&b.dataset.a==="unpromo"&&!user.guest){p[5][s]=null;saveDB();note="Promo tag removed.";render()}});
+render();</script>
+<script src="theme.js"></script>
+</body>
+</html>

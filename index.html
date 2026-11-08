@@ -1,265 +1,22 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Presyo Check</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
-<style>
-:root{--bg:#F1F5F9;--surf:#FFFFFF;--ink:#0F172A;--mute:#64748B;--line:#CBD5E1;--green:#4F46E5;--deep:#3730A3;--hd:#3730A3;--link:#4F46E5;--focus:#4F46E5;--ongreen:#FFFFFF;--star:#F97316;--tag:#F97316;--tagink:#0F172A;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#090D16;--surf:#1E293B;--ink:#F8FAFC;--mute:#94A3B8;--line:#334155;--green:#6366F1;--deep:#4F46E5;--hd:#818CF8;--link:#818CF8;--focus:#818CF8;--ongreen:#FFFFFF;--star:#FB923C;--tag:#FB923C;--tagink:#090D16}}
-:root[data-theme="dark"]{--bg:#090D16;--surf:#1E293B;--ink:#F8FAFC;--mute:#94A3B8;--line:#334155;--green:#6366F1;--deep:#4F46E5;--hd:#818CF8;--link:#818CF8;--focus:#818CF8;--ongreen:#FFFFFF;--star:#FB923C;--tag:#FB923C;--tagink:#090D16}
-*,*::before,*::after{box-sizing:inherit}
-html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
-.wrap{max-width:1800px;margin:0 auto;padding:20px 16px 60px}
-h1{font-size:clamp(2.2rem,9vw,3.4rem);line-height:1;margin:0 0 8px;font-weight:800;letter-spacing:-.02em}
-h2{font-size:1.5rem;margin:6px 0 2px;line-height:1.15}
-p{margin:0 0 14px}.mute{color:var(--mute)}
-button,input{font:inherit;color:inherit}
-button:focus-visible,input:focus-visible{outline:3px solid var(--green);outline-offset:2px}
-.btn{display:block;width:100%;padding:14px 16px;border-radius:10px;border:2px solid var(--ink);background:var(--surf);cursor:pointer;font-weight:600;text-align:center;margin-bottom:10px}
-.btn.main{background:var(--green);color:var(--ongreen);border-color:var(--green)}
-.btn:disabled{opacity:.5;cursor:not-allowed;border-style:dashed}
-.btn small{display:block;font-weight:400}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.chip{background:var(--tag);color:var(--tagink);border-radius:999px;padding:2px 10px;font-size:.85rem;font-weight:600}
-.link{background:none;border:0;color:var(--green);cursor:pointer;padding:6px 0;font-weight:600}
-.in{width:100%;padding:12px 14px;border:2px solid var(--ink);border-radius:10px;background:var(--surf);margin-bottom:10px}
-.pair{display:flex;gap:8px}.pair .in{margin:0}.pair .btn{width:auto;margin:0}
-.item{display:block;width:100%;text-align:left;background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer}
-.item b{display:block}.item small{color:var(--mute)}
-.store{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center}
-.price{font-size:1.25rem;font-weight:800;text-align:right}
-.price.min{background:var(--tag);color:var(--tagink);border-radius:6px;padding:0 8px}
-.stars{color:var(--mute);font-size:.9rem}
-.lock{border:2px dashed var(--line);border-radius:10px;padding:14px;margin-top:12px}
-.lock b{display:block}
-.scan{position:relative;background:#000;border-radius:10px;overflow:hidden;margin-bottom:10px}
-.scan video{width:100%;display:block;max-height:260px;object-fit:cover}
-.msg{font-size:.9rem;color:var(--mute);margin:0 0 10px}
-hr{border:0;border-top:1px solid var(--line);margin:18px 0}
-.pimg{background:var(--surf);border:1px solid var(--line);border-radius:10px;display:flex;justify-content:center;padding:14px;margin:12px 0}
-.pimg svg{width:140px;height:auto}
-h3{font-size:1.1rem;margin:16px 0 6px}h3.pn{font-size:1.4rem;margin:0 0 8px}
-.det{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0 0 14px}.det dt{color:var(--mute)}.det dd{margin:0;font-weight:600}
-.rv{position:relative}
-.rvs{max-height:230px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;background:var(--surf);padding:4px 12px}
-.rvs.blur .r{filter:blur(5px);user-select:none}
-.r{padding:10px 0;border-bottom:1px solid var(--line)}
-.ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;text-align:center;padding:12px;font-weight:800}
-.ov span{background:var(--surf);border:2px solid var(--ink);border-radius:8px;padding:6px 12px}
-.flt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
-.flt label{font-size:.85rem;color:var(--mute)}.flt .in{margin:4px 0 0;padding:10px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
-.dlg{background:var(--surf);border:2px solid var(--ink);border-radius:12px;max-width:480px;width:100%;padding:16px}
-.dlg .list{max-height:240px;overflow-y:auto;margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
-.dlg .btns{display:flex;gap:8px}.dlg .btns .btn{margin:0}
-.btns2{display:flex;gap:8px;margin-bottom:6px}.btns2 .btn{margin:0}
-.badge{display:inline-block;background:var(--tag);color:var(--tagink);border-radius:6px;padding:0 6px;font-size:.8rem;font-weight:600}
-.frm label{display:block;font-size:.85rem;color:var(--mute);margin-bottom:8px}.frm .in{margin:4px 0 0}
-.v-login,.v-signin,.v-add{max-width:560px}
-.cols,.cols2{display:block}
-.grid,#hits{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
-.grid .item,#hits .item{margin:0}
-.btn{min-height:48px}.link{padding:10px 0}.in{font-size:16px}
-@media (hover:hover){.item:hover{border-color:var(--green)}.btn:not(:disabled):hover{border-color:var(--green)}}
-@media (min-width:900px){.wrap{padding:32px 28px 80px}.cols{display:grid;grid-template-columns:340px 1fr;gap:36px;align-items:start}}
-@media (min-width:800px){.cols2{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:32px;align-items:start}.rvs{max-height:420px}.pimg svg{width:180px}}
-@media (max-width:420px){.dlg .btns{flex-direction:column}.wrap{padding:16px 14px 48px}.pair{flex-wrap:wrap}.pair .in{flex:1 1 100%}.pair .btn{width:100%}}
-h1{color:var(--hd)}.stars{color:var(--star)}
-.link{color:var(--link)}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.chip{background:var(--line);color:var(--ink)}
-.in{border-color:var(--mute)}.btn{border-color:var(--line)}
-.dlg,.ov span{border:1px solid var(--line)}
-.btn.main:hover:not(:disabled),.btn.main:active:not(:disabled){background:var(--deep);border-color:var(--deep)}
-.chip.in{background:var(--green);color:var(--ongreen)}
-.tg{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surf);color:var(--ink);font-size:1.3rem;line-height:1;cursor:pointer;z-index:4;box-shadow:0 2px 8px rgba(0,0,0,.18)}
-
-
-/* Mobile Back to Top button styling */
-.back-to-top{position:fixed;right:16px;bottom:calc(70px + env(safe-area-inset-bottom,0px));display:none;align-items:center;background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 6px;box-shadow:0 4px 12px rgba(0,0,0,0.15);cursor:pointer;z-index:1000;font-weight:600;font-size:0.85rem;gap:8px;transition:opacity 0.2s ease}
-.back-to-top .circle-icon{width:32px;height:32px;border-radius:50%;background:var(--green);color:var(--ongreen);display:flex;align-items:center;justify-content:center;font-size:1rem}
-@media(max-width:899px){.back-to-top.visible{display:flex}}
-
-
-/* Palette preview controls and theme tokens */
-.palette-toggle{position:fixed;right:14px;bottom:calc(126px + env(safe-area-inset-bottom,0px));z-index:6;border:1px solid var(--line);background:var(--surf);color:var(--ink);border-radius:999px;padding:10px 14px;font:600 14px "Bricolage Grotesque",system-ui,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.16);cursor:pointer}
-.palette-panel{position:fixed;right:14px;bottom:calc(180px + env(safe-area-inset-bottom,0px));z-index:7;width:min(300px,calc(100vw - 28px));padding:14px;background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.22);display:none}
-.palette-panel.open{display:block}
-.palette-panel h3{margin:0 0 4px;font-size:1rem}
-.palette-panel p{font-size:.82rem;color:var(--mute);margin:0 0 12px}
-.palette-choice{width:100%;display:flex;align-items:center;gap:10px;text-align:left;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;margin:7px 0;cursor:pointer}
-.palette-choice[aria-pressed="true"]{border:2px solid var(--green);padding:9px}
-.palette-dots{display:flex;gap:4px;flex:none}
-.palette-dots i{width:17px;height:17px;border-radius:50%;display:block}
-.palette-choice strong{display:block;font-size:.9rem}
-.palette-choice small{display:block;color:var(--mute);font-size:.75rem}
-.palette-mode{display:flex;gap:6px;margin-top:10px}
-.palette-mode button{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--ink);cursor:pointer}
-.palette-mode button.active{background:var(--green);border-color:var(--green);color:var(--ongreen)}
-@media(max-width:420px){.palette-toggle{right:12px}.palette-panel{right:12px}}
-
-
-.top{gap:12px}.top .chip{display:block;flex:0 1 auto;min-width:0;max-width:calc(100% - 96px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.top .link{flex:none;white-space:nowrap;width:auto}
-.panel{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
-.panel h2{margin-top:0}.panel h3{margin:0 0 10px}.panel .top{margin-bottom:12px}.panel .flt{grid-template-columns:1fr}
-.fw{margin-bottom:8px}.fl-l{display:block;font-size:.85rem;color:var(--mute)}
-.fbtn{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;cursor:pointer;margin:4px 0 0;min-height:44px}
-.ft{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.item.sel{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
-.modal{z-index:20}.dlg{padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}.dlg .list{max-height:min(50vh,360px)}.dlg .list .item{margin-bottom:8px}
-@media (max-width:600px){.modal.sheet{align-items:flex-end;padding:0}.sheet .dlg{max-width:none;border-radius:16px 16px 0 0}}
-@media (min-width:900px){.side{position:sticky;top:16px}.bp{max-height:max(260px,calc(100vh - 460px));overflow-y:auto}.main{min-width:0}}
-.item[hidden]{display:none}
-@media (min-width:1200px){.wrap{padding:36px 40px 90px}.cols{grid-template-columns:380px 1fr;gap:40px}.cols2{grid-template-columns:minmax(320px,460px) 1fr;gap:40px}.grid,#hits{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}}
-@media (min-width:900px){
-.wrap.v-home{height:100vh;height:100dvh;display:flex;flex-direction:column;padding-bottom:76px;overflow:hidden}
-.v-home .cols{flex:1;min-height:0;align-items:stretch;grid-template-rows:minmax(0,1fr)}
-.v-home .side{position:static;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
-.v-home .panel{flex:none}
-.v-home .bp{flex:1 1 auto;min-height:220px;max-height:none;overflow-y:auto}
-.v-home .main{min-height:0;overflow-y:auto;background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:16px}
-.palette-toggle{right:70px;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
-.palette-panel{bottom:calc(66px + env(safe-area-inset-bottom,0px))}
-}
-*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
-*::-webkit-scrollbar{width:12px;height:12px}
-*::-webkit-scrollbar-track{background:transparent}
-*::-webkit-scrollbar-thumb{background:var(--line);border-radius:999px;border:3px solid transparent;background-clip:content-box}
-*::-webkit-scrollbar-thumb:hover{background:var(--mute);background-clip:content-box}
-@media (min-width:900px){
-html:has(.v-home),body:has(.v-home){overflow:hidden}
-.v-home .side{overflow:hidden}
-.v-home .panel{flex:0 1 auto;min-height:0;overflow-y:auto}
-.v-home .bp{flex:1 1 0;min-height:140px;margin-bottom:0}
-}
-@media (min-width:900px){
-.v-home .panel:first-child{padding:12px 14px}
-.v-home .panel:first-child>p.mute{display:none}
-.v-home .panel:first-child h2{font-size:1.05rem;margin:0 0 8px}
-.v-home .panel:first-child .btn{min-height:40px;padding:8px 12px;margin-bottom:8px}
-.v-home .panel:first-child .in{padding:8px 12px}
-.v-home .panel:first-child .top{margin-bottom:8px}
-.v-home .panel:first-child .link{padding:4px 0}
-}
-@media (min-width:900px){
-.v-home .panel:first-child{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px}
-.v-home .panel:first-child>*{grid-column:1/-1}
-.v-home .panel:first-child>h2{display:none}
-.v-home .panel:first-child>.top{order:1;margin:0}
-.v-home .panel:first-child>#scanbox{order:2}
-.v-home .panel:first-child>.btn{margin:0;font-size:.9rem}
-.v-home .panel:first-child>.btn[data-a="scan"]{order:3;grid-column:auto}
-.v-home .panel:first-child>.btn:last-child{order:4;grid-column:auto}
-.v-home .panel:first-child>.pair{order:5;margin:0}
-.v-home .panel:first-child>.msg{order:6;margin:0}
-}
-@media (min-width:900px){
-.v-home .side{overflow-y:auto}
-.v-home .panel:first-child{flex:none;overflow:visible}
-.v-home .bp{flex:1 1 0;min-height:160px}
-.v-home .panel:first-child>.btn{min-width:0;padding:8px 6px;line-height:1.25;white-space:normal;overflow:visible}
-.v-home .bp h3{font-size:1rem;margin:0 0 8px}
-.v-home .bp .in{padding:8px 10px;font-size:.9rem;margin-bottom:8px}
-.v-home .bp .fl-l{font-size:.75rem}
-.v-home .bp .fbtn{min-height:36px;margin:2px 0 0;font-size:.9rem}
-.v-home .bp .fw{margin-bottom:6px}
-.v-home .bp .link{font-size:.85rem;padding:4px 0}
-}
-@media (min-width:900px){
-.v-home .bp .fbtn{min-height:30px;padding:3px 10px;border:1px solid var(--line);border-radius:8px;font-size:.85rem;background:var(--bg)}
-.v-home .bp .fbtn:hover{border-color:var(--green)}
-.v-home .bp .fl-l{line-height:1.2;margin-top:2px}
-.v-home .bp .fw{margin-bottom:4px}
-}
-</style>
+<link rel="stylesheet" href="app.css">
 </head>
 <body>
 <div class="wrap" id="app"></div>
-<button class="tg" id="tg" type="button"></button>
-<button class="back-to-top" id="backToTop" type="button"><span class="circle-icon">↑</span><span>Back to Top</span></button>
-<button class="palette-toggle" id="paletteToggle" type="button" aria-expanded="false">🎨 Theme</button>
-<section class="palette-panel" id="palettePanel" aria-label="Color palette chooser">
-  <h3>Choose your palette</h3><p>Preview the same app in different visual styles.</p>
-  <button class="palette-choice" data-palette-choice="smart" aria-pressed="true"><span class="palette-dots"><i style="background:#2563EB"></i><i style="background:#059669"></i><i style="background:#0F172A"></i></span><span><strong>Modern Fintech</strong><small>Clean, trustworthy, balanced</small></span></button>
-  <button class="palette-choice" data-palette-choice="premium" aria-pressed="false"><span class="palette-dots"><i style="background:#7C3AED"></i><i style="background:#F59E0B"></i><i style="background:#1E1B4B"></i></span><span><strong>Premium Shopping</strong><small>Elegant, premium, refined</small></span></button>
-  <button class="palette-choice" data-palette-choice="deal" aria-pressed="false"><span class="palette-dots"><i style="background:#EA580C"></i><i style="background:#84CC16"></i><i style="background:#292524"></i></span><span><strong>Deal Hunter</strong><small>Bold, energetic, deal-focused</small></span></button>
-  <div class="palette-mode"><button type="button" id="modeLight">☀ Light</button><button type="button" id="modeDark">☾ Dark</button></div>
-</section>
+<script src="shared.js"></script>
 <script>
-var STORES=[
- {n:"Dali",l:"Pasig City"},{n:"Puregold",l:"Ortigas Ave., Pasig City"},{n:"Shopwise",l:"Cainta, Rizal"},
- {n:"Robinsons Supermarket",l:"Ortigas, Pasig City"},{n:"SM Markets",l:"Megamall, Mandaluyong"}];
-// barcode, name, size, prices per store, ratings per store, promos per store [{active, mechanics, start, end} or null]
-var P=[
- ["4800000000011","Century Tuna","155 g",[38,42,44,43,45],[4.1,4.4,4.2,4.3,4.5],[
-   {active:true,mechanics:"Buy 1 get 1 free tag on selected stocks",start:"2026-11-01",end:"2026-12-31"},null,null,null,null
- ]],
- ["4800000000028","Sardines in tomato sauce","155 g",[17,18.5,19.5,19,19.75],[4.2,4.3,4.0,4.1,4.4],[
-   null,{active:true,mechanics:"₱2 off promo discount",start:"2026-11-05",end:"2026-11-20"},null,null,null
- ]],
- ["4800000000035","Instant pancit canton","60 g",[14,15,15.5,15.5,16],[4.6,4.6,4.5,4.4,4.6],[
-   null,null,{active:true,mechanics:"Bundle pack discount",start:"2026-10-15",end:"2026-11-30"},null,null
- ]],
- ["4800000000042","Canned corned beef","150 g",[38,41,44,43,45],[3.9,4.1,4.0,4.0,4.2],[
-   null,null,null,{active:true,mechanics:"Weekend special markdown",start:"2026-11-06",end:"2026-11-09"},null
- ]],
- ["4800000000059","Evaporated milk","370 mL",[31,33,35,34,35.5],[4.3,4.4,4.2,4.3,4.5],[
-   null,null,null,null,{active:true,mechanics:"Save ₱3 with loyalty card",start:"2026-11-01",end:"2026-12-01"}
- ]],
- ["4800000000066","3-in-1 coffee","10 sachets",[null,72,76,75,77],[0,4.5,4.4,4.5,4.6],[
-   null,{active:true,mechanics:"Free mug bundle",start:"2026-11-01",end:"2026-11-15"},null,null,null
- ]],
- ["4800000000073","Datu Puti","1 L",[34,37,39,38,40],[4.0,4.2,4.1,4.1,4.3],[
-   {active:true,mechanics:"Price rollback promo",start:"2026-11-02",end:"2026-11-25"},null,null,null,null
- ]],
- ["4800000000080","Safeguard","90 g",[null,31,33,32,34],[0,4.4,4.3,4.4,4.5],[
-   null,null,{active:true,mechanics:"Buy 3 save ₱5",start:"2026-11-04",end:"2026-11-18"},null,null
- ]],
- ["4809012906104","Amanda's Sweet Ginisang Bagoong","340 g",[85,92,95,90,96],[4.5,4.3,4.4,4.2,4.6],[
-   {active:true,mechanics:"Introductory discount",start:"2026-11-01",end:"2026-12-15"},null,null,{active:true,mechanics:"Bundle promo",start:"2026-11-01",end:"2026-11-10"},null
- ]]];
-
-
-// Helper to check if a promo is currently valid based on end date
-function isPromoActive(promo){
-  if(!promo || !promo.active) return false;
-  if(!promo.end) return true;
-  var today = new Date().toISOString().split('T')[0];
-  return promo.end >= today;
-}
-
-
-// details per product, same order as P
-var M=[
- {n:"Century Tuna (Flakes in Oil)",b:"Century Tuna",m:"Century Pacific Food, Inc.",c:"Canned Goods, Seafood",o:"Philippines",t:["Century Tuna","Century Pacific Food, Inc.","Canned Goods","Seafood","Philippines"],col:"#2f6fb0"},
- {n:"555 Sardines (Tomato Sauce)",b:"555",m:"Century Pacific Food, Inc.",c:"Canned Goods, Seafood",o:"Philippines",t:["555","Century Pacific Food, Inc.","Canned Goods","Seafood","Philippines"],col:"#c0392b"},
- {n:"Lucky Me! Pancit Canton (Original)",b:"Lucky Me!",m:"Monde Nissin Corporation",c:"Instant Noodles",o:"Philippines",t:["Lucky Me!","Monde Nissin Corporation","Noodles","Instant Food","Philippines"],col:"#e0a800"},
- {n:"Argentina Corned Beef (Classic)",b:"Argentina",m:"Century Pacific Food, Inc.",c:"Canned Goods, Meat",o:"Philippines",t:["Argentina","Century Pacific Food, Inc.","Canned Goods","Meat","Philippines"],col:"#a33a2a"},
- {n:"Alaska Evaporated Milk",b:"Alaska",m:"Alaska Milk Corporation",c:"Dairy",o:"Philippines",t:["Alaska","Alaska Milk Corporation","Dairy","Canned Milk","Philippines"],col:"#2a8f5b"},
- {n:"Nescafé 3-in-1 (Original)",b:"Nescafé",m:"Nestlé Philippines, Inc.",c:"Coffee, Beverages",o:"Philippines",t:["Nescafé","Nestlé Philippines, Inc.","Beverages","Coffee","Philippines"],col:"#7a4b2a"},
- {n:"Datu Puti Soy Sauce",b:"Datu Puti",m:"NutriAsia, Inc.",c:"Condiments, Sauces",o:"Philippines",t:["Datu Puti","NutriAsia, Inc.","Condiments","Sauces","Philippines"],col:"#3b2a1f"},
- {n:"Safeguard Bar Soap (White)",b:"Safeguard",m:"Procter & Gamble Philippines",c:"Personal Care",o:"Philippines",t:["Safeguard","Procter & Gamble Philippines","Personal Care","Soap","Philippines"],col:"#3a7bd5"},
- {n:"Amanda's Sweet Ginisang Bagoong",b:"Amanda's",m:"Amanda's Marine Products",c:"Condiments, Sauces",o:"Philippines",t:["Amanda's","Amanda's Marine Products","Condiments","Sauces","Bagoong","Shrimp Paste","Philippines"],col:"#2a8f5b"}];
-var RV=[["Maria S.",5,"Always fresh and a good price. I buy it every payday."],["Jun R.",4,"Reliable quality. Sometimes sold out in the afternoon."],["Ate Liza",5,"Family favorite. Cheaper here than the corner store."],["Paolo D.",3,"Okay, but the price went up last month."],["Kuya Ben",4,"Good for the budget. Check the expiry date on the shelf."],["Carla M.",5,"Consistent every time."],["Rhea T.",4,"Easy to find, near the front aisle."]];
-function mi(){return P.indexOf(cur)}
-function img(m){return '<svg viewBox="0 0 100 110" role="img" aria-label="Product image placeholder"><rect x="15" y="15" width="70" height="80" rx="8" fill="'+m.col+'"/><ellipse cx="50" cy="15" rx="35" ry="7" fill="#d5dbd7"/><rect x="15" y="45" width="70" height="26" fill="#fff" opacity=".92"/><text x="50" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#16261c">'+esc(m.b)+'</text></svg>'}
-function revs(){var L=M[mi()].rv||RV;if(!L.length)return '<div class="r mute">No reviews yet.</div>';return L.map(function(r){return '<div class="r"><b>'+r[0]+'</b> <span class="stars">'+'★'.repeat(r[1])+'</span><br>'+r[2]+'</div>'}).join('')}
-var app=document.getElementById("app"),view="login",cur=null,store=null,msg="",stream=null,timer=null;
-var user={guest:true};
-var promoFilter=false; 
-var selectedArea=""; 
-
-
-function peso(n){return "₱"+(n%1?n.toFixed(2):n)}
-function stars(r){return r?"★ "+r.toFixed(1)+" / 5":"No rating yet"}
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var app=document.getElementById("app"),view=getUser()?"home":"login",msg="",stream=null,timer=null;
+if(location.hash==="#signin")view="signin";
+var promoFilter=getPromoFilter();
 function stopScan(){if(timer){clearInterval(timer);timer=null}if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}}
-function go(v){stopScan();view=v;selectedArea="";render();window.scrollTo(0,0)}
-function find(code){code=code.trim();var p=P.filter(function(x){return x[0]===code})[0];
-  if(p){cur=p;msg="";selectedArea="";go("results")}else{msg="No product with barcode "+esc(code)+" yet. Check the digits or try a name search.";go("home")}}
+function go(v){stopScan();view=v;render();window.scrollTo(0,0)}
+function find(code){code=code.trim();var p=findP(code);if(p){location.href=urlCompare(p[0])}else{msg="No product with barcode "+esc(code)+" yet. Check the digits or try a name search.";go("home")}}
 function render(){
  var h="";
  if(view==="login"){
@@ -278,77 +35,13 @@ function render(){
   '<button class="btn'+(promoFilter?' main':'')+'" data-a="toggle-promo">🔥 On Promo'+(promoFilter?' (Active)':'')+'</button>'+
   '<button class="btn" '+(user.guest?'disabled':'data-a="add"')+'>Add a product'+(user.guest?'<small>Log in to add products</small>':'')+'</button></section><section class="panel bp"><h3>Browse products</h3><input class="in" id="name" type="search" placeholder="Search by product name" aria-label="Search by name" value="'+esc(Q)+'">'+filters()+'</section></div><div class="main"><div id="hits">'+hits()+'</div></div></div>';
  }
- if(view==="results"){
-  var idx=[];
-  cur[3].forEach(function(v,i){
-    if(v!=null){
-      // If promoFilter is active, ONLY include stores where this product is on valid promo
-      if(promoFilter && !isPromoActive(cur[5][i])) return;
-      idx.push(i);
-    }
-  });
-
-
-  if(selectedArea){
-    idx=idx.filter(function(i){return STORES[i].l.toLowerCase().includes(selectedArea.toLowerCase())});
-  }
-  idx.sort(function(a,b){return cur[3][a]-cur[3][b]});
-  
-  var areas=[];STORES.forEach(function(s){if(!areas.includes(s.l))areas.push(s.l)}); areas.sort();
-
-
-  h='<button class="link" data-a="home">‹ Back</button><h2>'+M[mi()].n+'</h2><p class="mute">'+cur[2]+' &bull; Barcode: <code>'+cur[0]+'</code></p>';
-  
-  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">'+
-     '<select class="in" id="areaFilter" style="margin:0;flex:1;min-width:200px" aria-label="Filter by area"><option value="">All Areas / Locations</option>'+
-     areas.map(function(a){return '<option value="'+esc(a)+'"'+(selectedArea===a?' selected':'')+'>'+esc(a)+'</option>'}).join('')+'</select>'+
-     '<button class="btn'+(promoFilter?' main':'')+'" data-a="toggle-promo" style="width:auto;margin:0;padding:10px 16px">🔥 On Promo'+(promoFilter?' (Active)':'')+'</button>'+
-     '</div>';
-
-
-  if(!idx.length){
-    h+='<p class="mute">No stores match the selected promo and area filters.</p>';
-  } else {
-    h+='<div class="grid">';idx.forEach(function(i,k){
-      var promo=cur[5][i];
-      var hasValidPromo=isPromoActive(promo);
-      h+='<button class="item store" data-s="'+i+'"><b>'+STORES[i].n+' '+(hasValidPromo?'<span class="badge" style="background:#EF4444;color:#fff" title="'+esc(promo.mechanics)+' (Ends: '+promo.end+')">PROMO</span>':'')+'</b><span class="price'+(k===0?' min':'')+'">'+peso(cur[3][i])+'</span><small>'+STORES[i].l+'</small><span class="stars">'+stars(cur[4][i])+'</span></button>';
-    });
-    h+='</div>';
-  }
-  
-  var activePromos = [];
-  cur[5].forEach(function(promo, i){
-    if(isPromoActive(promo) && (!selectedArea || STORES[i].l.toLowerCase().includes(selectedArea.toLowerCase()))){
-      activePromos.push('<b>'+STORES[i].n+' ('+STORES[i].l+'):</b> '+esc(promo.mechanics)+' (Valid until '+promo.end+')');
-    }
-  });
-  if(activePromos.length > 0){
-    h+='<div class="panel" style="margin-top:16px;background:var(--bg)"><h3>Active Promo Details</h3><ul style="margin:0;padding-left:18px;font-size:0.9rem">'+activePromos.map(function(ap){return '<li>'+ap+'</li>'}).join('')+'</ul></div>';
-  }
-
-
-  h+='<p class="msg" style="margin-top:14px">Prices shown are sample data.</p>';
- }
- if(view==="store"){
-  var i=store,m=M[mi()];
-  var promo=cur[5][i];
-  var hasValidPromo=isPromoActive(promo);
-  h='<button class="link" data-a="results">‹ Back to stores</button><h2>'+STORES[i].n+'</h2><p class="mute">'+STORES[i].l+'</p>'+
-  '<div class="cols2"><div><div class="pimg">'+img(m)+'</div><h3 class="pn">'+m.n+'</h3>'+
-  '<dl class="det"><dt>Brand Name</dt><dd>'+m.b+'</dd><dt>Parent Company / Manufacturer</dt><dd>'+m.m+'</dd><dt>Product Category</dt><dd>'+m.c+'</dd><dt>Country of Origin</dt><dd>'+m.o+'</dd><dt>Size / Weight</dt><dd>'+cur[2]+'</dd></dl>'+
-  '<div class="price" style="text-align:left;font-size:2rem">'+peso(cur[3][i])+'</div><p class="stars">'+stars(cur[4][i])+'</p>'+
-  (hasValidPromo?'<div style="background:var(--tag);color:var(--tagink);padding:10px;border-radius:8px;margin-top:12px"><b>🔥 Active Promotion</b><br>'+esc(promo.mechanics)+'<br><small>Valid: '+promo.start+' to '+promo.end+'</small></div>':'')+
-  '</div><div><h3>Reviews</h3><div class="rv"><div class="rvs'+(user.guest?' blur':'')+'" tabindex="0" aria-label="Product reviews">'+revs()+'</div>'+(user.guest?'<div class="ov"><span>Log in to read reviews</span></div>':'')+'</div>'+
-  '<button class="btn" style="margin-top:16px" disabled>Send a price update</button><p class="msg">'+(user.guest?'Login with existing account to send a price update...':'Price updates are coming soon.')+'</p></div></div>';
- }
  if(view==="signin")h='<button class="link" data-a="back">‹ Back</button><h2>Log in</h2><p class="mute">Demo login for now: type any name. Passwords come later.</p><form data-a="signin"><input class="in" id="uname" maxlength="24" placeholder="Your name" aria-label="Your name" required><button class="btn main" type="submit">Log in</button></form>';
  if(view==="add")h='<button class="link" data-a="home">‹ Back</button><h2>Add a product</h2><p class="mute">Fill in what is on the shelf tag and the package.</p><form class="frm" data-a="add">'+bcbox()+fld("pn","Product name (include the variant)")+fld("pb","Brand name","","dl-b")+fld("pm","Parent company / manufacturer","","dl-m")+fld("pc","Product category (separate with commas)","","dl-c")+fld("po","Country of origin","","dl-o","Philippines")+fld("ps","Size / weight (for example 155 g)")+fld("st","Store name","","dl-s")+fld("sl","Store location (city or area)")+fld("pp","Current price (₱)","number")+
   '<label style="display:flex;align-items:center;gap:8px;margin:12px 0;cursor:pointer"><input type="checkbox" id="hasPromo" style="width:20px;height:20px"><b>Is this item on promo?</b></label>'+
   '<div id="promoFields" style="display:none;border:1px solid var(--line);padding:12px;border-radius:8px;margin-bottom:12px">'+
     fld("pMech","Promo Mechanics (e.g., Buy 1 Take 1)")+
-    fld("pStart","Start Date","date")+
-    fld("pEnd","End Date","date")+
+    fld("pUntil","Promo valid until","date")+
+    '<p class="msg" id="perr" role="alert"></p>'+
   '</div>'+
   '<label>Your rating<select class="in" id="rt"><option value="">No review yet</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label><label>Your review (optional)<textarea class="in" id="rv" rows="3"></textarea></label><button class="btn main" type="submit">Check and add product</button></form>'+dls();
  app.className="wrap v-"+view;app.innerHTML=h;
@@ -379,8 +72,11 @@ function sidx(n,l){for(var i=0;i<STORES.length;i++)if(STORES[i].n.toLowerCase()=
 function where(i){return STORES.filter(function(_,s){return P[i][3][s]!=null}).map(function(s){return s.n+', '+s.l}).join('; ')}
 function tryAdd(){
  var d={code:V("bc"),n:V("pn"),b:V("pb"),m:V("pm"),c:V("pc").split(",").map(function(s){return s.trim()}).filter(Boolean).join(", "),o:V("po"),z:V("ps"),s:V("st"),l:V("sl"),p:parseFloat(V("pp")),r:+V("rt"),t:V("rv")};
- var hasPromoChecked = document.getElementById("hasPromo").checked;
- d.promo = hasPromoChecked ? {active:true, mechanics:V("pMech"), start:V("pStart"), end:V("pEnd")} : null;
+ d.promo=null;
+ if(document.getElementById("hasPromo").checked){var pm=V("pMech"),pu=V("pUntil"),er=document.getElementById("perr");
+  if(!pm||!pu){er.textContent="Add the promo mechanics and the until date.";return}
+  if(pu<today()){er.textContent="The until date can’t be in the past.";return}
+  er.textContent="";d.promo={active:true,mechanics:pm,until:pu,by:user.name}}
 
 
  if(!(d.p>0)||!d.c)return;pend=d;
@@ -394,11 +90,11 @@ function tryAdd(){
  app.insertAdjacentHTML("beforeend",h+'</div><div class="btns"><button class="btn" data-a="dclose">Go back</button><button class="btn main" data-a="dadd">It’s different, add it</button></div></div></div>')}
 function doAdd(){var d=pend;if(!d)return;
  var si=sidx(d.s,d.l);if(si<0){STORES.push({n:d.s,l:d.l});si=STORES.length-1;P.forEach(function(p){p[3].push(null);p[4].push(0);p[5].push(null)})}
- if(d.j>=0){var q=P[d.j],mm=M[d.j];q[3][si]=d.p;q[5][si]=d.promo;if(d.r){q[4][si]=d.r;mm.rv=(mm.rv||RV).slice();mm.rv.unshift([user.name,d.r,d.t||"(no comment)"])}pend=null;cur=q;msg="";return go("results")}
+ if(d.j>=0){var q=P[d.j],mm=M[d.j];q[3][si]=d.p;if(d.promo)q[5][si]=d.promo;if(d.r){q[4][si]=d.r;mm.rv=(mm.rv||RV).slice();mm.rv.unshift([user.name,d.r,d.t||"(no comment)"])}pend=null;saveDB();location.href=urlCompare(q[0]);return}
  var pr=STORES.map(function(){return null}),rt=STORES.map(function(){return 0}),proms=STORES.map(function(){return null});pr[si]=d.p;rt[si]=d.r;proms[si]=d.promo;
  P.push([d.code||"user-"+(P.length+1),d.n,d.z,pr,rt,proms]);
  M.push({n:d.n,b:d.b,m:d.m,c:d.c,o:d.o,t:[d.b,d.m].concat(d.c.split(", "),[d.o]),col:COLS[P.length%COLS.length],rv:d.r?[[user.name,d.r,d.t||"(no comment)"]]:[]});
- pend=null;cur=P[P.length-1];msg="";go("results")}
+ pend=null;saveDB();location.href=urlCompare(P[P.length-1][0])}
 function hits(){
  var t=Q.toLowerCase(),o="";
  P.forEach(function(p,i){
@@ -458,8 +154,8 @@ async function handleBarcodeImage(file){
 app.addEventListener("click",function(e){
  var b=e.target.closest("button");if(e.target.classList.contains("modal")){e.target.remove();return}if(!b||b.disabled)return;
  var a=b.dataset.a;
- if(a==="guest"){user={guest:true};go("home")}
- if(a==="logout"){user={guest:true};cur=null;msg="";go("login")}
+ if(a==="guest"){user={guest:true};setUser(user);go("home")}
+ if(a==="logout"){user={guest:true};setUser(null);msg="";go("login")}
  if(a==="home"){msg="";go("home")}
  if(a==="clear"){F={b:"",m:"",c:"",o:""};render()}
  if(a==="login")go("signin");
@@ -473,11 +169,9 @@ app.addEventListener("click",function(e){
  if(a==="fupl")document.getElementById("barcodeUploadModal").click();
  if(a==="ffill")fill(V("bc"));
  if(a==="dclose"){var md=app.querySelector(".modal");if(md)md.remove()}
- if(a==="results")go("results");
  if(a==="scan")scan();
- if(a==="toggle-promo"){promoFilter=!promoFilter;render()}
+ if(a==="toggle-promo"){promoFilter=!promoFilter;setPromoFilter(promoFilter);render()}
  if(b.dataset.c)find(b.dataset.c);
- if(b.dataset.s!==undefined){store=+b.dataset.s;go("store")}
 });
 document.addEventListener("change",function(e){
  if(e.target.id==="barcodeUpload" && e.target.files.length){
@@ -488,10 +182,6 @@ document.addEventListener("change",function(e){
   handleBarcodeImage(e.target.files[0]);
   e.target.value = "";
  }
- if(e.target.id==="areaFilter"){
-  selectedArea=e.target.value;
-  render();
- }
  if(e.target.id==="hasPromo"){
   var pf=document.getElementById("promoFields");
   if(pf) pf.style.display = e.target.checked ? "block" : "none";
@@ -499,80 +189,14 @@ document.addEventListener("change",function(e){
 });
 app.addEventListener("submit",function(e){e.preventDefault();var a=e.target.dataset.a;
  if(a==="code"){var c=document.getElementById("code").value;if(c.trim())find(c)}
- if(a==="signin"){var n=V("uname");if(n){user={guest:false,name:n};go("home")}}
+ if(a==="signin"){var n=V("uname");if(n){user={guest:false,name:n};setUser(user);go("home")}}
  if(a==="add")tryAdd()});
 app.addEventListener("input",function(e){if(e.target.id==="name"){Q=e.target.value;document.getElementById("hits").innerHTML=hits()}
  if(e.target.id==="fs"){var t=e.target.value.trim().toLowerCase(),n=0;app.querySelectorAll(".modal .list .item").forEach(function(b,i){var show=t?(i>0&&b.textContent.toLowerCase().indexOf(t)>=0):true;b.hidden=!show;if(show&&i>0)n++});document.getElementById("fnone").hidden=!t||n>0}});
 app.addEventListener("change",function(e){var k=e.target.dataset.f;if(k){F[k]=e.target.value;document.getElementById("fl").innerHTML=fl();var s=document.querySelector('[data-f="'+k+'"]');if(s)s.focus();document.getElementById("hits").innerHTML=hits()}});
 
 
-// Mobile Back to Top visibility and scroll logic
-var backToTopBtn=document.getElementById("backToTop");
-window.addEventListener("scroll",function(){
-  if(window.scrollY > 300){
-    backToTopBtn.classList.add("visible");
-  } else {
-    backToTopBtn.classList.remove("visible");
-  }
-});
-backToTopBtn.addEventListener("click",function(){
-  window.scrollTo({top:0,behavior:"smooth"});
-});
-
-
-var th=null,mq=window.matchMedia("(prefers-color-scheme: dark)"),tg=document.getElementById("tg");
-try{th=localStorage.getItem("pc_theme")}catch(e){}
-function isDark(){var a=document.documentElement.getAttribute("data-theme");return a?a==="dark":mq.matches}
-function paint(){var d=isDark();tg.textContent=d?"☀":"☾";tg.setAttribute("aria-label",d?"Switch to light mode":"Switch to dark mode")}
-if(th==="light"||th==="dark")document.documentElement.setAttribute("data-theme",th);
-paint();
-tg.addEventListener("click",function(){var n=isDark()?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("pc_theme",n)}catch(e){}paint()});
-if(mq.addEventListener)mq.addEventListener("change",paint);
-render();
-</script>
-
-
-<script>
-(function(){
-  const palettes = {
-    smart: {
-      light:{bg:"#FFFFFF",surf:"#FFFFFF",ink:"#0F172A",mute:"#64748B",line:"#E2E8F0",green:"#2563EB",deep:"#1D4ED8",hd:"#0F172A",link:"#2563EB",focus:"#2563EB",ongreen:"#FFFFFF",star:"#D97706",tag:"#D1FAE5",tagink:"#065F46"},
-      dark:{bg:"#0B1120",surf:"#1E293B",ink:"#F1F5F9",mute:"#94A3B8",line:"#334155",green:"#3B82F6",deep:"#2563EB",hd:"#F1F5F9",link:"#60A5FA",focus:"#60A5FA",ongreen:"#FFFFFF",star:"#FBBF24",tag:"#064E3B",tagink:"#D1FAE5"}
-    },
-    premium: {
-      light:{bg:"#FAF9FF",surf:"#FFFFFF",ink:"#1E1B4B",mute:"#6B6687",line:"#E7E2F2",green:"#7C3AED",deep:"#6D28D9",hd:"#1E1B4B",link:"#7C3AED",focus:"#8B5CF6",ongreen:"#FFFFFF",star:"#D97706",tag:"#FEF3C7",tagink:"#92400E"},
-      dark:{bg:"#100D1F",surf:"#211B36",ink:"#F5F3FF",mute:"#B7AECF",line:"#403653",green:"#A78BFA",deep:"#8B5CF6",hd:"#F5F3FF",link:"#C4B5FD",focus:"#C4B5FD",ongreen:"#1E1B4B",star:"#FBBF24",tag:"#594018",tagink:"#FDE68A"}
-    },
-    deal: {
-      light:{bg:"#FAFAF9",surf:"#FFFFFF",ink:"#292524",mute:"#78716C",line:"#E7E5E4",green:"#EA580C",deep:"#C2410C",hd:"#292524",link:"#C2410C",focus:"#F97316",ongreen:"#FFFFFF",star:"#D97706",tag:"#ECFCCB",tagink:"#3F6212"},
-      dark:{bg:"#171412",surf:"#292524",ink:"#FAFAF9",mute:"#A8A29E",line:"#57534E",green:"#F97316",deep:"#EA580C",hd:"#FAFAF9",link:"#FDBA74",focus:"#FB923C",ongreen:"#FFFFFF",star:"#FBBF24",tag:"#365314",tagink:"#ECFCCB"}
-    }
-  };
-  const root=document.documentElement, panel=document.getElementById("palettePanel"), toggle=document.getElementById("paletteToggle");
-  let palette="smart";
-  try{palette=localStorage.getItem("pc_palette")||"smart"}catch(e){}
-  function mode(){return isDark()?"dark":"light"}
-  function apply(){
-    const m=mode(), colors=palettes[palette][m];
-    Object.keys(colors).forEach(k=>root.style.setProperty("--"+k,colors[k]));
-    document.querySelectorAll("[data-palette-choice]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.paletteChoice===palette)));
-    document.getElementById("modeLight").classList.toggle("active",m==="light");
-    document.getElementById("modeDark").classList.toggle("active",m==="dark");
-    try{localStorage.setItem("pc_palette",palette)}catch(e){}
-    if(typeof paint==="function")paint();
-  }
-  document.querySelectorAll("[data-palette-choice]").forEach(b=>b.addEventListener("click",()=>{palette=b.dataset.paletteChoice;apply()}));
-  document.getElementById("modeLight").addEventListener("click",()=>{root.setAttribute("data-theme","light");try{localStorage.setItem("pc_theme","light")}catch(e){};apply()});
-  document.getElementById("modeDark").addEventListener("click",()=>{root.setAttribute("data-theme","dark");try{localStorage.setItem("pc_theme","dark")}catch(e){};apply()});
-  toggle.addEventListener("click",()=>{const open=panel.classList.toggle("open");toggle.setAttribute("aria-expanded",String(open))});
-  document.addEventListener("click",e=>{if(!panel.contains(e.target)&&!toggle.contains(e.target)){panel.classList.remove("open");toggle.setAttribute("aria-expanded","false")}});
-  const oldToggle=document.getElementById("tg");
-  oldToggle.addEventListener("click",()=>setTimeout(apply,0));
-  if(window.matchMedia){const mq=window.matchMedia("(prefers-color-scheme: dark)");if(mq.addEventListener)mq.addEventListener("change",()=>setTimeout(apply,0))}
-  apply();
-})();
-</script>
-
-
+render();</script>
+<script src="theme.js"></script>
 </body>
 </html>
