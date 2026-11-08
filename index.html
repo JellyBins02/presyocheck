@@ -13,6 +13,7 @@
 <script>
 var app=document.getElementById("app"),view=getUser()?"home":"login",msg="",stream=null,timer=null;
 if(location.hash==="#signin")view="signin";
+if(location.hash==="#signup")view="signup";
 var promoFilter=getPromoFilter();
 function stopScan(){if(timer){clearInterval(timer);timer=null}if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}}
 function go(v){stopScan();view=v;render();window.scrollTo(0,0)}
@@ -22,8 +23,8 @@ function render(){
  if(view==="login"){
   h='<h1><span class="pg">₱</span>resyo Check</h1><p class="mute">Scan a product to see its price at every store near you.</p>'+
   '<button class="btn main" data-a="guest">Continue as guest<small>Browse prices without an account</small></button>'+
-  '<button class="btn" data-a="login">Log in<small>Demo: any name works, no password yet</small></button>'+
-  '<button class="btn" disabled>Sign up<small>Coming soon</small></button>';
+  '<button class="btn" data-a="login">Log in<small>Demo or existing account</small></button>'+
+  '<button class="btn" data-a="signup">Sign up<small>Create a new account</small></button>';
  }
  if(view==="home"){
   h='<div class="cols"><div class="side"><section class="panel">'+
@@ -35,7 +36,16 @@ function render(){
   '<button class="btn'+(promoFilter?' main':'')+'" data-a="toggle-promo">🔥 On Promo'+(promoFilter?' (Active)':'')+'</button>'+
   '<button class="btn" '+(user.guest?'disabled':'data-a="add"')+'>Add a product'+(user.guest?'<small>Log in to add products</small>':'')+'</button></section><section class="panel bp"><h3>Browse products</h3><input class="in" id="name" type="search" placeholder="Search by product name" aria-label="Search by name" value="'+esc(Q)+'">'+filters()+'</section></div><div class="main"><div id="hits">'+hits()+'</div></div></div>';
  }
- if(view==="signin")h='<button class="link" data-a="back">‹ Back</button><h2>Log in</h2><p class="mute">Demo login for now: type any name. Passwords come later.</p><form data-a="signin"><input class="in" id="uname" maxlength="24" placeholder="Your name" aria-label="Your name" required><button class="btn main" type="submit">Log in</button></form>';
+ if(view==="signin")h='<button class="link" data-a="back">‹ Back</button><h2>Log in</h2><p class="mute">Enter your username or demo name.</p><form data-a="signin"><input class="in" id="uname" maxlength="40" placeholder="Username or name" aria-label="Username or name" required><input class="in" id="upass" type="password" placeholder="Password" aria-label="Password"><p class="msg" id="lerr" role="alert"></p><button class="btn main" type="submit">Log in</button></form><p style="margin-top:12px;font-size:0.9rem">Don't have an account? <button class="link" data-a="signup">Sign up here</button></p>';
+ if(view==="signup")h='<button class="link" data-a="back">‹ Back</button><h2>Create Account</h2><p class="mute">Sign up for Presyo Check.</p><form class="frm" data-a="signup">'+
+  fld("sFirst","First Name*","text","", "")+
+  fld("sMiddle","Middle Name (optional)","text","", "")+
+  fld("sLast","Last Name*","text","", "")+
+  fld("sEmail","Email Address*","email","", "")+
+  fld("sUser","Username*","text","", "")+
+  fld("sPass","Password*","password","", "")+
+  '<p class="msg" id="suerr" role="alert"></p>'+
+  '<button class="btn main" type="submit">Register Account</button></form>';
  if(view==="add")h='<button class="link" data-a="home">‹ Back</button><h2>Add a product</h2><p class="mute">Fill in what is on the shelf tag and the package.</p><form class="frm" data-a="add">'+bcbox()+fld("pn","Product name (include the variant)")+fld("pb","Brand name","","dl-b")+fld("pm","Parent company / manufacturer","","dl-m")+fld("pc","Product category (separate with commas)","","dl-c")+fld("po","Country of origin","","dl-o","Philippines")+fld("ps","Size / weight (for example 155 g)")+fld("st","Store name","","dl-s")+fld("sl","City / area (for example, Makati)")+fld("sb","Branch, landmark or street (for example, Inside Ayala Malls Circuit, or Pablo Ocampo St.)")+fld("pp","Current price (₱)","number")+
   '<label style="display:flex;align-items:center;gap:8px;margin:12px 0;cursor:pointer"><input type="checkbox" id="hasPromo" style="width:20px;height:20px"><b>Is this item on promo?</b></label>'+
   '<div id="promoFields" style="display:none;border:1px solid var(--line);padding:12px;border-radius:8px;margin-bottom:12px">'+
@@ -71,10 +81,9 @@ function where(i){return STORES.map(function(s,k){return P[i][3][k]!=null?s.n+" 
 function tryAdd(){
  var d={code:V("bc"),n:V("pn"),b:V("pb"),m:V("pm"),c:V("pc").split(",").map(function(s){return s.trim()}).filter(Boolean).join(", "),o:V("po"),z:V("ps"),s:V("st"),l:V("sl"),br:V("sb"),p:parseFloat(V("pp")),r:+V("rt"),t:V("rv")};
  d.promo=null;
- if(document.getElementById("hasPromo").checked){var rp=readPromo(d.p,user.name),er=document.getElementById("perr");
+ if(document.getElementById("hasPromo").checked){var rp=readPromo(d.p,formatUserName(user)),er=document.getElementById("perr");
   if(rp.e){er.textContent=rp.e;return}
   er.textContent="";d.promo=rp.p}
-
 
  var miss=[];if(!d.n)miss.push("product name");if(!d.b)miss.push("brand");if(!d.c)miss.push("category");if(!d.s)miss.push("store name");if(!d.l)miss.push("city / area");if(!d.br)miss.push("branch or street");if(!(d.p>0))miss.push("price");
  var ae=document.getElementById("aerr");if(miss.length){ae.textContent="Please fill in: "+miss.join(", ")+".";return}ae.textContent="";pend=d;
@@ -88,10 +97,11 @@ function tryAdd(){
  app.insertAdjacentHTML("beforeend",h+'</div><div class="btns"><button class="btn" data-a="dclose">Go back</button><button class="btn main" data-a="dadd">It’s different, add it</button></div></div></div>')}
 function doAdd(){var d=pend;if(!d)return;
  var si=sidx(d.s,d.l,d.br);if(si<0){STORES.push({n:d.s,l:d.l,b:d.br});si=STORES.length-1;P.forEach(function(p){p[3].push(null);p[4].push(0);p[5].push(null)})}
- if(d.j>=0){var q=P[d.j],mm=M[d.j];q[3][si]=d.p;if(d.promo)q[5][si]=d.promo;if(d.r){q[4][si]=d.r;mm.rv=(mm.rv||RV).slice();mm.rv.unshift([user.name,d.r,d.t||"(no comment)"])}pend=null;saveDB();location.href=urlCompare(q[0]);return}
+ var authorName=formatUserName(user);
+ if(d.j>=0){var q=P[d.j],mm=M[d.j];q[3][si]=d.p;if(d.promo)q[5][si]=d.promo;if(d.r){q[4][si]=d.r;mm.rv=(mm.rv||RV).slice();mm.rv.unshift([authorName,d.r,d.t||"(no comment)"])}pend=null;saveDB();location.href=urlCompare(q[0]);return}
  var pr=STORES.map(function(){return null}),rt=STORES.map(function(){return 0}),proms=STORES.map(function(){return null});pr[si]=d.p;rt[si]=d.r;proms[si]=d.promo;
  P.push([d.code||"user-"+(P.length+1),d.n,d.z,pr,rt,proms]);
- M.push({n:d.n,b:d.b,m:d.m,c:d.c,o:d.o,t:[d.b,d.m].concat(d.c.split(", "),[d.o]),col:COLS[P.length%COLS.length],rv:d.r?[[user.name,d.r,d.t||"(no comment)"]]:[]});
+ M.push({n:d.n,b:d.b,m:d.m,c:d.c,o:d.o,t:[d.b,d.m].concat(d.c.split(", "),[d.o]),col:COLS[P.length%COLS.length],rv:d.r?[[authorName,d.r,d.t||"(no comment)"]]:[]});
  pend=null;saveDB();location.href=urlCompare(P[P.length-1][0])}
 function hits(){
  var t=Q.toLowerCase(),o="";
@@ -103,7 +113,6 @@ function hits(){
   var hasActivePromo=false;
   p[5].forEach(function(pr){if(isPromoActive(pr))hasActivePromo=true;});
   if(promoFilter && !hasActivePromo)return;
-
 
   o+='<button class="item" data-c="'+p[0]+'"><b>'+m.n+' '+(hasActivePromo?'<span class="badge" style="background:#EF4444;color:#fff">PROMO</span>':'')+'</b><small>Tags: '+m.t.join(', ')+'</small></button>';
  });
@@ -157,6 +166,7 @@ app.addEventListener("click",function(e){
  if(a==="home"){msg="";go("home")}
  if(a==="clear"){F={b:"",m:"",c:"",o:""};render()}
  if(a==="login")go("signin");
+ if(a==="signup")go("signup");
  if(a==="back")go("login");
  if(a==="add")go("add");
  if(a==="dadd")doAdd();
@@ -187,14 +197,48 @@ document.addEventListener("change",function(e){
 });
 app.addEventListener("submit",function(e){e.preventDefault();var a=e.target.dataset.a;
  if(a==="code"){var c=document.getElementById("code").value;if(c.trim())find(c)}
- if(a==="signin"){var n=V("uname");if(n){user={guest:false,name:n};setUser(user);go("home")}}
+ if(a==="signin"){
+  var uInput=V("uname");
+  if(uInput){
+    var stored=getStoredUsers();
+    var found=stored.find(function(x){return x.username.toLowerCase()===uInput.toLowerCase()||x.email.toLowerCase()===uInput.toLowerCase()||x.firstName.toLowerCase()===uInput.toLowerCase()});
+    if(found){
+      user={guest:false, firstName:found.firstName, middleName:found.middleName, lastName:found.lastName, username:found.username, name:found.firstName};
+    } else {
+      user={guest:false, firstName:uInput, middleName:"", lastName:"", name:uInput};
+    }
+    setUser(user);
+    go("home");
+  }
+ }
+ if(a==="signup"){
+  var fn=V("sFirst"), mn=V("sMiddle"), ln=V("sLast"), em=V("sEmail"), un=V("sUser"), pw=V("sPass");
+  var suerr=document.getElementById("suerr");
+  if(!fn||!ln||!em||!un||!pw){
+    suerr.textContent="Please fill in all required fields (*).";
+    return;
+  }
+  var stored=getStoredUsers();
+  if(stored.some(function(x){return x.username.toLowerCase()===un.toLowerCase()})){
+    suerr.textContent="Username is already taken.";
+    return;
+  }
+  var newUser={firstName:fn, middleName:mn, lastName:ln, email:em, username:un, password:pw};
+  stored.push(newUser);
+  saveStoredUsers(stored);
+  user={guest:false, firstName:fn, middleName:mn, lastName:ln, username:un, name:fn};
+  setUser(user);
+  go("home");
+ }
  if(a==="add")tryAdd()});
 app.addEventListener("input",function(e){if(e.target.id==="name"){Q=e.target.value;document.getElementById("hits").innerHTML=hits()}
  if(e.target.id==="fs"){var t=e.target.value.trim().toLowerCase(),n=0;app.querySelectorAll(".modal .list .item").forEach(function(b,i){var show=t?(i>0&&b.textContent.toLowerCase().indexOf(t)>=0):true;b.hidden=!show;if(show&&i>0)n++});document.getElementById("fnone").hidden=!t||n>0}});
 app.addEventListener("change",function(e){var k=e.target.dataset.f;if(k){F[k]=e.target.value;document.getElementById("fl").innerHTML=fl();var s=document.querySelector('[data-f="'+k+'"]');if(s)s.focus();document.getElementById("hits").innerHTML=hits()}});
 
-
-window.addEventListener("hashchange",function(){if(location.hash==="#signin")go("signin")});
+window.addEventListener("hashchange",function(){
+  if(location.hash==="#signin")go("signin");
+  if(location.hash==="#signup")go("signup");
+});
 render();</script>
 <script src="theme.js"></script>
 </body>

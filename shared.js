@@ -51,6 +51,22 @@ function saveDB(){try{localStorage.setItem("pc_db",JSON.stringify({v:DBV,S:STORE
 function getUser(){try{return JSON.parse(sessionStorage.getItem("pc_user")||"null")}catch(e){return null}}
 function setUser(u){try{if(u)sessionStorage.setItem("pc_user",JSON.stringify(u));else sessionStorage.removeItem("pc_user")}catch(e){}}
 var user=getUser()||{guest:true};
+
+// Name formatting rule: Firstname, Middle initial, First letter of last name! (e.g., Juan A. D.)
+function formatUserName(u){
+  if(!u||u.guest)return "Guest";
+  if(u.firstName){
+    var fn=u.firstName.trim();
+    var mi=u.middleName?u.middleName.trim().charAt(0).toUpperCase()+".":"";
+    var li=u.lastName?u.lastName.trim().charAt(0).toUpperCase()+".":"";
+    return [fn,mi,li].filter(Boolean).join(" ");
+  }
+  return u.name||"User";
+}
+
+function getStoredUsers(){try{return JSON.parse(localStorage.getItem("pc_users")||"[]")}catch(e){return[]}}
+function saveStoredUsers(users){try{localStorage.setItem("pc_users",JSON.stringify(users))}catch(e){}}
+
 function getPromoFilter(){try{return sessionStorage.getItem("pc_promo")==="1"}catch(e){return false}}
 function setPromoFilter(v){try{sessionStorage.setItem("pc_promo",v?"1":"0")}catch(e){}}
 function qs(k){return new URLSearchParams(location.search).get(k)}
@@ -96,5 +112,5 @@ function lowest(i){var v=null;P[i][3].forEach(function(x,s){if(x!=null){var e=ef
 
 function locName(i){var s=STORES[i];return(s.b?s.b+", ":"")+s.l}
 
-function userbar(){return '<div class="who"><span>Hi, '+(user.guest?'Guest':esc(user.name))+'!</span>'+(user.guest?'<a class="link" href="index.html#signin">Log in existing user</a>':'<button class="link" type="button" data-a="logout">Log out</button>')+'</div>'}
+function userbar(){return '<div class="who"><span>Hi, '+esc(formatUserName(user))+'!</span>'+(user.guest?'<a class="link" href="index.html#signin">Log in existing user</a> | <a class="link" href="index.html#signup">Sign up</a>':'<button class="link" type="button" data-a="logout">Log out</button>')+'</div>'}
 document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('button[data-a="logout"]');if(b&&typeof go!=="function"){setUser(null);location.href="index.html"}});
