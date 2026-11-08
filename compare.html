@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Presyo Check</title>
+<title>₱resyo Check</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
 <link rel="stylesheet" href="app.css">
 </head>
@@ -15,7 +15,7 @@ var p=findP(qs("code")),area=qs("area")||"",promoOnly=getPromoFilter(),app=docum
 function render(){
  var h=navbar("")+'<a class="link" href="index.html">‹ Back to home</a>';
  if(!p){app.innerHTML=h+'<h2>Product not found</h2><p class="mute">We couldn’t find that product. It may have been added on another device.</p>';return}
- var m=M[P.indexOf(p)],idx=[];document.title=m.n+" prices | Presyo Check";
+ var m=M[P.indexOf(p)],idx=[];document.title=m.n+" prices | ₱resyo Check";
  p[3].forEach(function(v,i){if(v==null)return;if(promoOnly&&!isPromoActive(p[5][i]))return;if(area&&STORES[i].l.toLowerCase().indexOf(area.toLowerCase())<0)return;idx.push(i)});
  idx.sort(function(a,b){return effPrice(p,a)-effPrice(p,b)});
  var areas=[];STORES.forEach(function(s){if(areas.indexOf(s.l)<0)areas.push(s.l)});areas.sort();

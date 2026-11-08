@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Presyo Check</title>
+<title>₱resyo Check</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
 <link rel="stylesheet" href="app.css">
 </head>
@@ -17,7 +17,7 @@ function closeModal(){pend=null;var m=app.querySelector(".modal");if(m)m.remove(
 function askEnd(t){app.insertAdjacentHTML("beforeend",'<div class="modal" role="dialog" aria-modal="true" aria-label="Confirm promo ended"><div class="dlg"><h2>Are you sure promo already ended for this product?</h2><p class="mute">'+t+'</p><div class="btns" style="flex-direction:column"><button class="btn main" data-a="endyes">Yes. I understand the impact of my choice and will be responsible for ending this promo.</button><button class="btn" data-a="endno">No, I’m not sure</button></div></div></div>')}
 function render(){
  if(!p||!(p[3][s]!=null)){app.innerHTML='<a class="link" href="index.html">‹ Back to home</a><h2>Listing not found</h2><p class="mute">We couldn’t find that product at that store.</p>';return}
- var m=M[P.indexOf(p)],pr=p[5][s],act=isPromoActive(pr),g=user.guest,pp=act?promoPrice(pr,p[3][s]):null;document.title=m.n+" at "+STORES[s].n+" | Presyo Check";
+ var m=M[P.indexOf(p)],pr=p[5][s],act=isPromoActive(pr),g=user.guest,pp=act?promoPrice(pr,p[3][s]):null;document.title=m.n+" at "+STORES[s].n+" | ₱resyo Check";
  var promoUI=g?'<p class="mute">Log in to tag this product as on promo.</p><a class="btn" href="index.html#signin">Log in</a>':
   (note?'<p class="msg" role="status">'+note+'</p>':'')+'<form class="frm" data-a="promo">'+promoFields()+'<button class="btn main" type="submit">'+(act?'Update promo':'Tag as on promo')+'</button></form>';
  app.innerHTML=navbar("")+'<a class="link" href="'+urlCompare(p[0])+'">‹ Back to stores</a><h2><a class="tl" href="'+urlStore(STORES[s].n)+'">'+esc(STORES[s].n)+'</a></h2><p class="mute">'+esc(locName(s))+'</p>'+
