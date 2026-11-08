@@ -30,7 +30,7 @@ function render(){
  '<button class="btn" style="margin-top:16px" disabled>Send a price update</button><p class="msg">'+(g?'Login with existing account to send a price update...':'Price updates are coming soon.')+'</p></div></div>';
 }
 app.addEventListener("submit",function(e){e.preventDefault();if(e.target.dataset.a!=="promo"||user.guest)return;
- var r=readPromo(p[3][s],formatUserName(user));if(r.e){document.getElementById("perr").textContent=r.e;return}
+ var r=readPromo(p[3][s],user.name);if(r.e){document.getElementById("perr").textContent=r.e;return}
  var cu=p[5][s];
  if(isPromoActive(cu)&&r.p.until<cu.until){pend=r.p;askEnd("You’re setting this promo to end on "+fmtDate(r.p.until)+", before its current end date of "+fmtDate(cu.until)+". This changes it for everyone at "+esc(STORES[s].n)+", "+esc(locName(s))+".");return}
  p[5][s]=r.p;saveDB();note="Promo saved. Thank you!";render()});
