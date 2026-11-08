@@ -12,31 +12,34 @@
 <script src="shared.js"></script>
 <script>
 var p=findP(qs("code")),s=+qs("s"),app=document.getElementById("app"),note="";
-function closeModal(){var m=app.querySelector(".modal");if(m)m.remove()}
+var pend=null;
+function closeModal(){pend=null;var m=app.querySelector(".modal");if(m)m.remove()}
+function askEnd(t){app.insertAdjacentHTML("beforeend",'<div class="modal" role="dialog" aria-modal="true" aria-label="Confirm promo ended"><div class="dlg"><h2>Are you sure promo already ended for this product?</h2><p class="mute">'+t+'</p><div class="btns" style="flex-direction:column"><button class="btn main" data-a="endyes">Yes. I understand the impact of my choice and will be responsible for ending this promo.</button><button class="btn" data-a="endno">No, I’m not sure</button></div></div></div>')}
 function render(){
  if(!p||!(p[3][s]!=null)){app.innerHTML='<a class="link" href="index.html">‹ Back to home</a><h2>Listing not found</h2><p class="mute">We couldn’t find that product at that store.</p>';return}
  var m=M[P.indexOf(p)],pr=p[5][s],act=isPromoActive(pr),g=user.guest,pp=act?promoPrice(pr,p[3][s]):null;document.title=m.n+" at "+STORES[s].n+" | Presyo Check";
  var promoUI=g?'<p class="mute">Log in to tag this product as on promo.</p><a class="btn" href="index.html#signin">Log in</a>':
   (note?'<p class="msg" role="status">'+note+'</p>':'')+'<form class="frm" data-a="promo">'+promoFields()+'<button class="btn main" type="submit">'+(act?'Update promo':'Tag as on promo')+'</button></form>';
- app.innerHTML='<a class="link" href="'+urlCompare(p[0])+'">‹ Back to stores</a><h2>'+esc(STORES[s].n)+'</h2><p class="mute">'+esc(STORES[s].l)+'</p>'+
+ app.innerHTML=navbar("")+'<a class="link" href="'+urlCompare(p[0])+'">‹ Back to stores</a><h2><a class="tl" href="'+urlStore(STORES[s].n)+'">'+esc(STORES[s].n)+'</a></h2><p class="mute">'+esc(STORES[s].l)+'</p>'+
  '<div class="cols2"><div><div class="pimg">'+img(m)+'</div><h3 class="pn">'+esc(m.n)+'</h3>'+
- '<dl class="det"><dt>Brand Name</dt><dd>'+esc(m.b)+'</dd><dt>Parent Company / Manufacturer</dt><dd>'+esc(m.m)+'</dd><dt>Product Category</dt><dd>'+esc(m.c)+'</dd><dt>Country of Origin</dt><dd>'+esc(m.o)+'</dd><dt>Size / Weight</dt><dd>'+esc(p[2])+'</dd></dl>'+
+ '<dl class="det"><dt>Brand Name</dt><dd>'+esc(m.b)+'</dd><dt>Parent Company / Manufacturer</dt><dd><a class="tl" href="'+urlMfr(m.m)+'">'+esc(m.m)+'</a></dd><dt>Product Category</dt><dd>'+esc(m.c)+'</dd><dt>Country of Origin</dt><dd>'+esc(m.o)+'</dd><dt>Size / Weight</dt><dd>'+esc(p[2])+'</dd></dl>'+
  '<div class="price" style="text-align:left;font-size:2rem">'+priceHTML(p,s)+'</div><p class="stars">'+stars(p[4][s])+'</p>'+
  (act?'<div class="promo-box"><b>🔥 Active promotion</b><br>'+esc(pr.mechanics)+(pp!=null?'<br>Promo price '+peso(pp)+(pr.pct?' ('+pr.pct+'% off)':''):'')+'<br><small>Until '+fmtDate(pr.until)+(pr.by?' · tagged by '+esc(pr.by):'')+'</small></div>'+(g?'':'<button class="link" data-a="ended">Promo already ended</button>'):'')+'</div>'+
  '<div><h3>Reviews</h3><div class="rv"><div class="rvs'+(g?' blur':'')+'" tabindex="0" aria-label="Product reviews">'+revs(m)+'</div>'+(g?'<div class="ov"><span>Log in to read reviews</span></div>':'')+'</div>'+
  '<h3>Promo</h3><div class="panel">'+promoUI+'</div>'+
  '<button class="btn" style="margin-top:16px" disabled>Send a price update</button><p class="msg">'+(g?'Login with existing account to send a price update...':'Price updates are coming soon.')+'</p></div></div>';
- if(act&&!g){document.getElementById("pMech").value=pr.mechanics;document.getElementById("pUntil").value=pr.until}
 }
 app.addEventListener("submit",function(e){e.preventDefault();if(e.target.dataset.a!=="promo"||user.guest)return;
  var r=readPromo(p[3][s],user.name);if(r.e){document.getElementById("perr").textContent=r.e;return}
+ var cu=p[5][s];
+ if(isPromoActive(cu)&&r.p.until<cu.until){pend=r.p;askEnd("You’re setting this promo to end on "+fmtDate(r.p.until)+", before its current end date of "+fmtDate(cu.until)+". This changes it for everyone at "+esc(STORES[s].n)+", "+esc(STORES[s].l)+".");return}
  p[5][s]=r.p;saveDB();note="Promo saved. Thank you!";render()});
 app.addEventListener("click",function(e){
  if(e.target.classList.contains("modal")){closeModal();return}
  var b=e.target.closest("button");if(!b||user.guest)return;var a=b.dataset.a;
- if(a==="ended")app.insertAdjacentHTML("beforeend",'<div class="modal" role="dialog" aria-modal="true" aria-label="Confirm promo ended"><div class="dlg"><h2>Are you sure promo already ended for this product?</h2><p class="mute">This removes the promo tag and promo price for this product at '+esc(STORES[s].n)+', '+esc(STORES[s].l)+' for everyone. Only continue if you have seen the regular price at the store.</p><div class="btns" style="flex-direction:column"><button class="btn main" data-a="endyes">Yes. I understand the impact of my choice and will be responsible for ending this promo.</button><button class="btn" data-a="endno">No, I’m not sure</button></div></div></div>');
+ if(a==="ended"){pend=null;askEnd("This removes the promo tag and promo price for this product at "+esc(STORES[s].n)+", "+esc(STORES[s].l)+" for everyone. Only continue if you have seen the regular price at the store.")}
  if(a==="endno")closeModal();
- if(a==="endyes"){p[5][s]=null;saveDB();note="Promo marked as ended.";render()}});
+ if(a==="endyes"){if(pend){p[5][s]=pend;note="Promo saved. Thank you!"}else{p[5][s]=null;note="Promo marked as ended."}pend=null;saveDB();render()}});
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal()});
 render();
 </script>

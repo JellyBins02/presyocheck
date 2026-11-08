@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Presyo Check</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script src="shared.js"></script>
+<script>
+var app=document.getElementById("app"),name=qs("name");
+function plural(n,w){return n+" "+w+(n===1?"":"s")}
+function render(){
+ var h=navbar("mfr"),g={};M.forEach(function(m,i){(g[m.m]=g[m.m]||[]).push(i)});
+ function brands(ids){var b=[];ids.forEach(function(i){if(b.indexOf(M[i].b)<0)b.push(M[i].b)});return b.join(", ")}
+ if(!name){document.title="Manufacturers | Presyo Check";
+  h+='<h2>Manufacturers</h2><p class="mute">Tap a manufacturer to see every product listed under it.</p><div class="grid">'+Object.keys(g).sort().map(function(n){return '<a class="item" href="'+urlMfr(n)+'"><b>'+esc(n)+'</b><small>'+plural(g[n].length,"product")+' · '+esc(brands(g[n]))+'</small></a>'}).join('')+'</div>'}
+ else if(!g[name]){h+='<a class="link" href="manufacturer.html">‹ All manufacturers</a><h2>Manufacturer not found</h2><p class="mute">No products are listed for “'+esc(name)+'” yet.</p>'}
+ else{var ids=g[name];document.title=name+" | Presyo Check";
+  h+='<a class="link" href="manufacturer.html">‹ All manufacturers</a><h2>'+esc(name)+'</h2><p class="mute">'+plural(ids.length,"product")+' · Brands: '+esc(brands(ids))+'</p><div class="grid">'+ids.map(function(i){var m=M[i],lo=lowest(i);
+   return '<a class="item" href="'+urlCompare(P[i][0])+'"><b>'+esc(m.n)+'</b><small>'+esc(P[i][2])+' · '+esc(m.b)+'</small><br><span class="price" style="font-size:1rem">'+(lo!=null?'From '+peso(lo):'No price yet')+'</span></a>'}).join('')+'</div>'}
+ app.innerHTML=h}
+render();
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

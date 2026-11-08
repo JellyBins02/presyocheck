@@ -13,7 +13,7 @@
 <script>
 var p=findP(qs("code")),area="",promoOnly=getPromoFilter(),app=document.getElementById("app");
 function render(){
- var h='<a class="link" href="index.html">‹ Back to home</a>';
+ var h=navbar("")+'<a class="link" href="index.html">‹ Back to home</a>';
  if(!p){app.innerHTML=h+'<h2>Product not found</h2><p class="mute">We couldn’t find that product. It may have been added on another device.</p>';return}
  var m=M[P.indexOf(p)],idx=[];document.title=m.n+" prices | Presyo Check";
  p[3].forEach(function(v,i){if(v==null)return;if(promoOnly&&!isPromoActive(p[5][i]))return;if(area&&STORES[i].l.toLowerCase().indexOf(area.toLowerCase())<0)return;idx.push(i)});

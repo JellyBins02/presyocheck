@@ -42,7 +42,7 @@ function render(){
     promoFields()+
   '</div>'+
   '<label>Your rating<select class="in" id="rt"><option value="">No review yet</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label><label>Your review (optional)<textarea class="in" id="rv" rows="3"></textarea></label><button class="btn main" type="submit">Check and add product</button></form>'+dls();
- app.className="wrap v-"+view;app.innerHTML=h;
+ app.className="wrap v-"+view;app.innerHTML=((view==="home"||view==="add")?navbar("home"):"")+h;
 }
 var F={b:"",m:"",c:"",o:""},Q="";
 function bcbox(){return '<div id="scanbox"></div><label>Barcode (optional)<input class="in" id="bc" inputmode="numeric" placeholder="Scan, upload, or type the barcode"></label><div class="btns2"><button class="btn" type="button" data-a="fscan">Scan barcode</button><button class="btn" type="button" data-a="fupl">Upload image</button><button class="btn" type="button" data-a="ffill">Fill in details</button></div><input type="file" id="barcodeUploadModal" accept="image/*" style="display:none"><p class="msg" id="bcmsg" role="status"></p>'}

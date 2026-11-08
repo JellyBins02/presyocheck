@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Presyo Check</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script src="shared.js"></script>
+<script>
+var app=document.getElementById("app"),name=qs("name");
+function plural(n,w){return n+" "+w+(n===1?"":"s")}
+function chains(){var g={},o=[];STORES.forEach(function(s,i){var k=s.n.toLowerCase();if(!g[k]){g[k]={n:s.n,ix:[]};o.push(g[k])}g[k].ix.push(i)});return o.sort(function(a,b){return a.n.localeCompare(b.n)})}
+function sold(i){return P.filter(function(p){return p[3][i]!=null})}
+function render(){
+ var h=navbar("store"),cs=chains(),c=name?cs.filter(function(x){return x.n.toLowerCase()===name.toLowerCase()})[0]:null;
+ if(!name){document.title="Stores | Presyo Check";
+  h+='<h2>Stores</h2><p class="mute">Tap a store to see what each branch sells, area by area.</p><div class="grid">'+cs.map(function(x){return '<a class="item" href="'+urlStore(x.n)+'"><b>'+esc(x.n)+'</b><small>'+plural(x.ix.length,"branch")+' · '+esc(x.ix.map(function(i){return STORES[i].l}).join("; "))+'</small></a>'}).join('')+'</div>'}
+ else if(!c){h+='<a class="link" href="store.html">‹ All stores</a><h2>Store not found</h2><p class="mute">No store named “'+esc(name)+'” yet.</p>'}
+ else{document.title=c.n+" | Presyo Check";
+  h+='<a class="link" href="store.html">‹ All stores</a><h2>'+esc(c.n)+'</h2><p class="mute">'+plural(c.ix.length,"branch")+'. Items are listed per area, only where that branch sells them.</p>';
+  c.ix.slice().sort(function(a,b){return STORES[a].l.localeCompare(STORES[b].l)}).forEach(function(i){var it=sold(i);
+   h+='<section style="margin-top:18px"><h3>'+esc(STORES[i].l)+' <span class="mute" style="font-weight:400">· '+plural(it.length,"item")+'</span></h3>'+(it.length?'<div class="grid">'+it.map(function(p){var m=M[P.indexOf(p)];
+    return '<a class="item store" href="'+urlProduct(p[0],i)+'"><b>'+esc(m.n)+(isPromoActive(p[5][i])?' <span class="badge" style="background:#EF4444;color:#fff">PROMO</span>':'')+'</b><span class="price">'+priceHTML(p,i)+'</span><small>'+esc(p[2])+'</small><span class="stars">'+stars(p[4][i])+'</span></a>'}).join('')+'</div>':'<p class="mute">No items listed for this branch yet.</p>')+'</section>'})}
+ app.innerHTML=h}
+render();
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

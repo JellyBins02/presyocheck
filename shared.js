@@ -86,3 +86,10 @@ function readPromo(orig,by){var mech=V("pMech"),u=V("pUntil"),c=document.querySe
 document.addEventListener("change",function(e){if(e.target.name==="pMode"){var a=document.getElementById("pPriceW"),b=document.getElementById("pPctW");if(a)a.hidden=e.target.value!=="price";if(b)b.hidden=e.target.value!=="pct"}});
 // promos are removed automatically once their "until" date has passed
 (function(){var ch=false;P.forEach(function(r){(r[5]||[]).forEach(function(pr,i){if(pr&&pr.until&&pr.until<today()){r[5][i]=null;ch=true}})});if(ch)saveDB()})();
+
+// ---------- navigation bar + page links ----------
+function urlMfr(n){return "manufacturer.html?name="+encodeURIComponent(n)}
+function urlStore(n){return "store.html?name="+encodeURIComponent(n)}
+function navbar(a){var L=[["home","index.html","Home"],["mfr","manufacturer.html","Manufacturers"],["store","store.html","Stores"]];
+ return '<nav class="nav" aria-label="Main"><span class="brand">Presyo Check</span>'+L.map(function(l){return '<a href="'+l[1]+'"'+(l[0]===a?' aria-current="page"':'')+'>'+l[2]+'</a>'}).join('')+'</nav>'}
+function lowest(i){var v=null;P[i][3].forEach(function(x,s){if(x!=null){var e=effPrice(P[i],s);if(v==null||e<v)v=e}});return v}
