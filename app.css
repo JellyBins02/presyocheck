@@ -178,3 +178,11 @@ fieldset.pm{border:1px solid var(--line);border-radius:8px;padding:8px 12px;marg
 .nav a{padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--ink);font-weight:600}.nav a:hover{background:var(--bg)}
 .nav a[aria-current]{background:var(--green);color:var(--ongreen)}.nav .brand{margin-right:auto;color:var(--hd);font-weight:800;padding:0 8px}
 a.tl{color:var(--link);text-decoration:underline;text-underline-offset:3px}
+.who{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px;font-weight:600;flex:none}
+.who span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.who .link{padding:4px 0;font-size:.9rem;white-space:nowrap;flex:none}
+
+/* gold peso sign: darker gold on light backgrounds, bright gold on dark ones; independent of the chosen palette */
+:root{--gold:#A16207}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gold:#FBBF24}}
+:root[data-theme="dark"]{--gold:#FBBF24}
+.pg{color:var(--gold)}

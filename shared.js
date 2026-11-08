@@ -91,7 +91,10 @@ document.addEventListener("change",function(e){if(e.target.name==="pMode"){var a
 function urlMfr(n){return "manufacturer.html?name="+encodeURIComponent(n)}
 function urlStore(n){return "store.html?name="+encodeURIComponent(n)}
 function navbar(a){var L=[["home","index.html","Home"],["mfr","manufacturer.html","Manufacturers"],["store","store.html","Stores"]];
- return '<nav class="nav" aria-label="Main"><span class="brand">₱resyo Check</span>'+L.map(function(l){return '<a href="'+l[1]+'"'+(l[0]===a?' aria-current="page"':'')+'>'+l[2]+'</a>'}).join('')+'</nav>'}
+ return userbar()+'<nav class="nav" aria-label="Main"><span class="brand"><span class="pg">₱</span>resyo Check</span>'+L.map(function(l){return '<a href="'+l[1]+'"'+(l[0]===a?' aria-current="page"':'')+'>'+l[2]+'</a>'}).join('')+'</nav>'}
 function lowest(i){var v=null;P[i][3].forEach(function(x,s){if(x!=null){var e=effPrice(P[i],s);if(v==null||e<v)v=e}});return v}
 
 function locName(i){var s=STORES[i];return(s.b?s.b+", ":"")+s.l}
+
+function userbar(){return '<div class="who"><span>Hi, '+(user.guest?'Guest':esc(user.name))+'!</span>'+(user.guest?'<a class="link" href="index.html#signin">Log in existing user</a>':'<button class="link" type="button" data-a="logout">Log out</button>')+'</div>'}
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('button[data-a="logout"]');if(b&&typeof go!=="function"){setUser(null);location.href="index.html"}});

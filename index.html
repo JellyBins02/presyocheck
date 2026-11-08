@@ -20,13 +20,13 @@ function find(code){code=code.trim();var p=findP(code);if(p){location.href=urlCo
 function render(){
  var h="";
  if(view==="login"){
-  h='<h1>₱resyo Check</h1><p class="mute">Scan a product to see its price at every store near you.</p>'+
+  h='<h1><span class="pg">₱</span>resyo Check</h1><p class="mute">Scan a product to see its price at every store near you.</p>'+
   '<button class="btn main" data-a="guest">Continue as guest<small>Browse prices without an account</small></button>'+
   '<button class="btn" data-a="login">Log in<small>Demo: any name works, no password yet</small></button>'+
   '<button class="btn" disabled>Sign up<small>Coming soon</small></button>';
  }
  if(view==="home"){
-  h='<div class="cols"><div class="side"><section class="panel"><div class="top"><span class="chip'+(user.guest?'':' in')+'">'+(user.guest?'Guest':esc(user.name))+'</span><button class="link" data-a="'+(user.guest?'login':'logout')+'">'+(user.guest?'Log in existing user':'Log out')+'</button></div>'+
+  h='<div class="cols"><div class="side"><section class="panel">'+
   '<h2>Find a product</h2><p class="mute">Point your camera or upload a barcode image.</p>'+
   '<div id="scanbox"></div><button class="btn main" data-a="scan">Scan barcode</button>'+
   '<input type="file" id="barcodeUpload" accept="image/*" style="display:none"><button class="btn" data-a="upload-trigger">Upload barcode image</button>'+
@@ -194,6 +194,7 @@ app.addEventListener("input",function(e){if(e.target.id==="name"){Q=e.target.val
 app.addEventListener("change",function(e){var k=e.target.dataset.f;if(k){F[k]=e.target.value;document.getElementById("fl").innerHTML=fl();var s=document.querySelector('[data-f="'+k+'"]');if(s)s.focus();document.getElementById("hits").innerHTML=hits()}});
 
 
+window.addEventListener("hashchange",function(){if(location.hash==="#signin")go("signin")});
 render();</script>
 <script src="theme.js"></script>
 </body>
