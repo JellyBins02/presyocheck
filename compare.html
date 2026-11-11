@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>₱resyo Check</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
-<link rel="stylesheet" href="app.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>₱resyo Check</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+    <link rel="stylesheet" href="app.css">
 </head>
 <body>
-<div class="wrap" id="app"></div>
-<script src="shared.js"></script>
-<script>
-var p=findP(qs("code")),area=qs("area")||"",promoOnly=getPromoFilter(),app=document.getElementById("app");
-function render(){
- var h=navbar("")+'<a class="link" href="index.html">‹ Back to home</a>';
- if(!p){app.innerHTML=h+'<h2>Product not found</h2><p class="mute">We couldn’t find that product. It may have been added on another device.</p>';return}
- var m=M[P.indexOf(p)],idx=[];document.title=m.n+" prices | ₱resyo Check";
- p[3].forEach(function(v,i){if(v==null)return;if(promoOnly&&!isPromoActive(p[5][i]))return;if(area&&STORES[i].l.toLowerCase().indexOf(area.toLowerCase())<0)return;idx.push(i)});
- idx.sort(function(a,b){return effPrice(p,a)-effPrice(p,b)});
- var areas=[];STORES.forEach(function(s){if(areas.indexOf(s.l)<0)areas.push(s.l)});areas.sort();
- h+='<h2>'+esc(m.n)+'</h2><p class="mute">'+esc(p[2])+' &bull; Barcode: <code>'+esc(p[0])+'</code></p>'+
- '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px"><select class="in" id="areaFilter" style="margin:0;flex:1;min-width:200px" aria-label="Filter by area"><option value="">All Areas / Locations</option>'+areas.map(function(a){return '<option value="'+esc(a)+'"'+(area===a?' selected':'')+'>'+esc(a)+'</option>'}).join('')+'</select>'+
- '<button class="btn'+(promoOnly?' main':'')+'" data-a="promo" style="width:auto;margin:0;padding:10px 16px">🔥 On Promo'+(promoOnly?' (Active)':'')+'</button></div>';
- if(!idx.length)h+='<p class="mute">No stores match the selected promo and area filters.</p>';
- else{h+='<div class="grid">';idx.forEach(function(i,k){var pr=p[5][i];
-  h+='<a class="item store" href="'+urlProduct(p[0],i)+'"><b>'+esc(STORES[i].n)+' '+(isPromoActive(pr)?'<span class="badge" style="background:#EF4444;color:#fff" title="'+esc(pr.mechanics)+' (until '+fmtDate(pr.until)+')">PROMO</span>':'')+'</b><span class="price'+(k===0?' min':'')+'">'+priceHTML(p,i)+'</span><small>'+esc(locName(i))+'</small><span class="stars">'+stars(p[4][i])+'</span></a>'});h+='</div>'}
- var ap=[];p[5].forEach(function(pr,i){if(isPromoActive(pr)&&(!area||STORES[i].l.toLowerCase().indexOf(area.toLowerCase())>=0))ap.push('<li><b>'+esc(STORES[i].n)+' ('+esc(locName(i))+'):</b> '+esc(pr.mechanics)+' (Until '+fmtDate(pr.until)+')</li>')});
- if(ap.length)h+='<div class="panel" style="margin-top:16px;background:var(--bg)"><h3>Active Promo Details</h3><ul style="margin:0;padding-left:18px;font-size:.9rem">'+ap.join('')+'</ul></div>';
- app.innerHTML=h+'<p class="msg" style="margin-top:14px">Prices shown are sample data.</p>';
-}
-app.addEventListener("click",function(e){var b=e.target.closest("button");if(b&&b.dataset.a==="promo"){promoOnly=!promoOnly;setPromoFilter(promoOnly);render()}});
-app.addEventListener("change",function(e){if(e.target.id==="areaFilter"){area=e.target.value;render()}});
-render();</script>
-<script src="theme.js"></script>
+    <div class="wrap" id="app"></div>
+    <script src="shared.js"></script>
+    <script>
+        var p = findP(qs("code")), area = qs("area") || "", promoOnly = getPromoFilter(), app = document.getElementById("app");
+        function render() {
+            var h = navbar("") + '<a class="link" href="index.html">‹ Back to home</a>';
+            if (!p) { app.innerHTML = h + '<h2>Product not found</h2><p class="mute">We couldn’t find that product. It may have been added on another device.</p>'; return }
+            var m = M[P.indexOf(p)], idx = []; document.title = m.n + " prices | ₱resyo Check";
+            p[3].forEach(function (v, i) { if (v == null) return; if (promoOnly && !isPromoActive(p[5][i])) return; if (area && STORES[i].l.toLowerCase().indexOf(area.toLowerCase()) < 0) return; idx.push(i) });
+            idx.sort(function (a, b) { return effPrice(p, a) - effPrice(p, b) });
+            var areas = []; STORES.forEach(function (s) { if (areas.indexOf(s.l) < 0) areas.push(s.l) }); areas.sort();
+            h += '<h2>' + esc(m.n) + '</h2><p class="mute">' + esc(p[2]) + ' &bull; Barcode: <code>' + esc(p[0]) + '</code></p>' +
+                '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px"><select class="in" id="areaFilter" style="margin:0;flex:1;min-width:200px" aria-label="Filter by area"><option value="">All Areas / Locations</option>' + areas.map(function (a) { return '<option value="' + esc(a) + '"' + (area === a ? ' selected' : '') + '>' + esc(a) + '</option>' }).join('') + '</select>' +
+                '<button class="btn' + (promoOnly ? ' main' : '') + '" data-a="promo" style="width:auto;margin:0;padding:10px 16px">🔥 On Promo' + (promoOnly ? ' (Active)' : '') + '</button></div>';
+            if (!idx.length) h += '<p class="mute">No stores match the selected promo and area filters.</p>';
+            else {
+                h += '<div class="grid">'; idx.forEach(function (i, k) {
+                    var pr = p[5][i];
+                    h += '<a class="item store" href="' + urlProduct(p[0], i) + '"><b>' + esc(STORES[i].n) + ' ' + (isPromoActive(pr) ? '<span class="badge" style="background:#EF4444;color:#fff" title="' + esc(pr.mechanics) + ' (until ' + fmtDate(pr.until) + ')">PROMO</span>' : '') + '</b><span class="price' + (k === 0 ? ' min' : '') + '">' + priceHTML(p, i) + '</span><small>' + esc(locName(i)) + '</small><span class="stars">' + stars(p[4][i]) + '</span></a>'
+                }); h += '</div>'
+            }
+            var ap = []; p[5].forEach(function (pr, i) { if (isPromoActive(pr) && (!area || STORES[i].l.toLowerCase().indexOf(area.toLowerCase()) >= 0)) ap.push('<li><b>' + esc(STORES[i].n) + ' (' + esc(locName(i)) + '):</b> ' + esc(pr.mechanics) + ' (Until ' + fmtDate(pr.until) + ')</li>') });
+            if (ap.length) h += '<div class="panel" style="margin-top:16px;background:var(--bg)"><h3>Active Promo Details</h3><ul style="margin:0;padding-left:18px;font-size:.9rem">' + ap.join('') + '</ul></div>';
+            app.innerHTML = h + '<p class="msg" style="margin-top:14px">Prices shown are sample data.</p>';
+        }
+        app.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b && b.dataset.a === "promo") { promoOnly = !promoOnly; setPromoFilter(promoOnly); render() } });
+        app.addEventListener("change", function (e) { if (e.target.id === "areaFilter") { area = e.target.value; render() } });
+        render();</script>
+    <script src="theme.js"></script>
 </body>
 </html>

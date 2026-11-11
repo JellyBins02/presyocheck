@@ -65,7 +65,31 @@ function today(){var d=new Date(),p=function(n){return (n<10?"0":"")+n};return d
 function isPromoActive(pr){return !!(pr&&pr.active&&(!pr.until||pr.until>=today()))}
 function fmtDate(s){var a=String(s).split("-");return new Date(+a[0],a[1]-1,+a[2]).toLocaleDateString("en-PH",{month:"short",day:"numeric",year:"numeric"})}
 function img(m){return '<svg viewBox="0 0 100 110" role="img" aria-label="Product image placeholder"><rect x="15" y="15" width="70" height="80" rx="8" fill="'+m.col+'"/><ellipse cx="50" cy="15" rx="35" ry="7" fill="#d5dbd7"/><rect x="15" y="45" width="70" height="26" fill="#fff" opacity=".92"/><text x="50" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#16261c">'+esc(m.b)+'</text></svg>'}
-function revs(m){var L=m.rv||RV;if(!L.length)return '<div class="r mute">No reviews yet.</div>';return L.map(function(r){return '<div class="r"><b>'+esc(r[0])+'</b> <span class="stars">'+'★'.repeat(r[1])+'</span><br>'+esc(r[2])+'</div>'}).join('')}
+
+function formatDisplayName(fullName) {
+    if (!fullName) return "";
+    var parts = fullName.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0];
+    
+    var firstName = parts[0];
+    var lastNameInitial = parts[parts.length - 1].charAt(0).toUpperCase() + ".";
+    
+    if (parts.length === 2) {
+        return firstName + " " + lastNameInitial;
+    }
+    
+    var middleInitial = parts[1].charAt(0).toUpperCase() + ".";
+    return firstName + " " + middleInitial + " " + lastNameInitial;
+}
+
+function revs(m){
+    var L = m.rv || RV;
+    if (!L.length) return '<div class="r mute">No reviews yet.</div>';
+    return L.map(function(r){
+        var reviewerName = formatDisplayName(r[0]);
+        return '<div class="r"><b>' + esc(reviewerName) + '</b> <span class="stars">' + '★'.repeat(r[1]) + '</span><br>' + esc(r[2]) + '</div>';
+    }).join('');
+}
 
 // ---------- promo pricing + promo form (shared by index.html and product.html) ----------
 function promoPrice(pr,orig){return(isPromoActive(pr)&&pr.price!=null&&pr.price<orig)?pr.price:null}
@@ -96,5 +120,8 @@ function lowest(i){var v=null;P[i][3].forEach(function(x,s){if(x!=null){var e=ef
 
 function locName(i){var s=STORES[i];return(s.b?s.b+", ":"")+s.l}
 
-function userbar(){return '<div class="who"><span>Hi, '+(user.guest?'Guest':esc(user.name))+'!</span>'+(user.guest?'<a class="link" href="index.html#signin">Log in existing user</a>':'<button class="link" type="button" data-a="logout">Log out</button>')+'</div>'}
+function userbar(){
+    var displayName = user.guest ? "Guest" : formatDisplayName(user.firstName || user.name);
+    return '<div class="who"><span>Hi, '+(user.guest?'Guest':esc(displayName))+'!</span>'+(user.guest?'<a class="link" href="index.html#signin">Log in</a> | <a class="link" href="index.html#signup">Sign up</a>':'<button class="link" type="button" data-a="logout">Log out</button>')+'</div>';
+}
 document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('button[data-a="logout"]');if(b&&typeof go!=="function"){setUser(null);location.href="index.html"}});
