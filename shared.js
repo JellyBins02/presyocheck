@@ -1,127 +1,336 @@
-var STORES=[
- {n:"Dali",l:"Pasig City"},{n:"Puregold",l:"Ortigas Ave., Pasig City"},{n:"Shopwise",l:"Cainta, Rizal"},
- {n:"Robinsons Supermarket",l:"Ortigas, Pasig City"},{n:"SM Markets",l:"Megamall, Mandaluyong"}];
-// barcode, name, size, prices per store, ratings per store, promos per store [{active, mechanics, start, end} or null]
-var P=[
- ["4800000000011","Century Tuna","155 g",[38,42,44,43,45],[4.1,4.4,4.2,4.3,4.5],[
-   {active:true,mechanics:"Buy 1 get 1 free tag on selected stocks",until:"2026-12-31"},null,null,null,null
- ]],
- ["4800000000028","Sardines in tomato sauce","155 g",[17,18.5,19.5,19,19.75],[4.2,4.3,4.0,4.1,4.4],[
-   null,{active:true,mechanics:"₱2 off promo discount",until:"2026-11-20",mode:"price",price:16.5},null,null,null
- ]],
- ["4800000000035","Instant pancit canton","60 g",[14,15,15.5,15.5,16],[4.6,4.6,4.5,4.4,4.6],[
-   null,null,{active:true,mechanics:"Bundle pack discount",until:"2026-11-30"},null,null
- ]],
- ["4800000000042","Canned corned beef","150 g",[38,41,44,43,45],[3.9,4.1,4.0,4.0,4.2],[
-   null,null,null,{active:true,mechanics:"Weekend special markdown",until:"2026-11-09"},null
- ]],
- ["4800000000059","Evaporated milk","370 mL",[31,33,35,34,35.5],[4.3,4.4,4.2,4.3,4.5],[
-   null,null,null,null,{active:true,mechanics:"Save ₱3 with loyalty card",until:"2026-12-01"}
- ]],
- ["4800000000066","3-in-1 coffee","10 sachets",[null,72,76,75,77],[0,4.5,4.4,4.5,4.6],[
-   null,{active:true,mechanics:"Free mug bundle",until:"2026-11-15"},null,null,null
- ]],
- ["4800000000073","Datu Puti","1 L",[34,37,39,38,40],[4.0,4.2,4.1,4.1,4.3],[
-   {active:true,mechanics:"Price rollback promo",until:"2026-11-25"},null,null,null,null
- ]],
- ["4800000000080","Safeguard","90 g",[null,31,33,32,34],[0,4.4,4.3,4.4,4.5],[
-   null,null,{active:true,mechanics:"Buy 3 save ₱5",until:"2026-11-18"},null,null
- ]],
- ["4809012906104","Amanda's Sweet Ginisang Bagoong","340 g",[85,92,95,90,96],[4.5,4.3,4.4,4.2,4.6],[
-   {active:true,mechanics:"Introductory discount",until:"2026-12-15"},null,null,{active:true,mechanics:"Bundle promo",until:"2026-11-10"},null
- ]]];
+// shared.js - helpers used by EVERY page. Loaded after data.js.
+//
+//   1. Storage      saving products and remembering who is logged in
+//   2. Small helpers  formatting, safe text, links between pages
+//   3. Promos       promo prices and the promo form
+//   4. Navigation   greeting row and menu bar
+//   5. Accounts     sign up / log in (demo only, see README)
 
+// ============================================================
+// 1. STORAGE
+// ============================================================
 
-var M=[
- {n:"Century Tuna (Flakes in Oil)",b:"Century Tuna",m:"Century Pacific Food, Inc.",c:"Canned Goods, Seafood",o:"Philippines",t:["Century Tuna","Century Pacific Food, Inc.","Canned Goods","Seafood","Philippines"],col:"#2f6fb0"},
- {n:"555 Sardines (Tomato Sauce)",b:"555",m:"Century Pacific Food, Inc.",c:"Canned Goods, Seafood",o:"Philippines",t:["555","Century Pacific Food, Inc.","Canned Goods","Seafood","Philippines"],col:"#c0392b"},
- {n:"Lucky Me! Pancit Canton (Original)",b:"Lucky Me!",m:"Monde Nissin Corporation",c:"Instant Noodles",o:"Philippines",t:["Lucky Me!","Monde Nissin Corporation","Noodles","Instant Food","Philippines"],col:"#e0a800"},
- {n:"Argentina Corned Beef (Classic)",b:"Argentina",m:"Century Pacific Food, Inc.",c:"Canned Goods, Meat",o:"Philippines",t:["Argentina","Century Pacific Food, Inc.","Canned Goods","Meat","Philippines"],col:"#a33a2a"},
- {n:"Alaska Evaporated Milk",b:"Alaska",m:"Alaska Milk Corporation",c:"Dairy",o:"Philippines",t:["Alaska","Alaska Milk Corporation","Dairy","Canned Milk","Philippines"],col:"#2a8f5b"},
- {n:"Nescafé 3-in-1 (Original)",b:"Nescafé",m:"Nestlé Philippines, Inc.",c:"Coffee, Beverages",o:"Philippines",t:["Nescafé","Nestlé Philippines, Inc.","Beverages","Coffee","Philippines"],col:"#7a4b2a"},
- {n:"Datu Puti Soy Sauce",b:"Datu Puti",m:"NutriAsia, Inc.",c:"Condiments, Sauces",o:"Philippines",t:["Datu Puti","NutriAsia, Inc.","Condiments","Sauces","Philippines"],col:"#3b2a1f"},
- {n:"Safeguard Bar Soap (White)",b:"Safeguard",m:"Procter & Gamble Philippines",c:"Personal Care",o:"Philippines",t:["Safeguard","Procter & Gamble Philippines","Personal Care","Soap","Philippines"],col:"#3a7bd5"},
- {n:"Amanda's Sweet Ginisang Bagoong",b:"Amanda's",m:"Amanda's Marine Products",c:"Condiments, Sauces",o:"Philippines",t:["Amanda's","Amanda's Marine Products","Condiments","Sauces","Bagoong","Shrimp Paste","Philippines"],col:"#2a8f5b"}];
-var RV=[["Maria S.",5,"Always fresh and a good price. I buy it every payday."],["Jun R.",4,"Reliable quality. Sometimes sold out in the afternoon."],["Ate Liza",5,"Family favorite. Cheaper here than the corner store."],["Paolo D.",3,"Okay, but the price went up last month."],["Kuya Ben",4,"Good for the budget. Check the expiry date on the shelf."],["Carla M.",5,"Consistent every time."],["Rhea T.",4,"Easy to find, near the front aisle."]];
+// Data version. Raise this number whenever you change data.js, so browsers drop their old saved copy.
+var DBV = 2;
 
-// ---------- shared storage + helpers (used by every page) ----------
-var DBV=2; // bump when the seed data changes so old saved data is reset
-try{var _s=JSON.parse(localStorage.getItem("pc_db")||"null");if(_s&&_s.v===DBV){STORES=_s.S;P=_s.P;M=_s.M}}catch(e){}
-function saveDB(){try{localStorage.setItem("pc_db",JSON.stringify({v:DBV,S:STORES,P:P,M:M}))}catch(e){}}
-function getUser(){try{return JSON.parse(sessionStorage.getItem("pc_user")||"null")}catch(e){return null}}
-function setUser(u){try{if(u)sessionStorage.setItem("pc_user",JSON.stringify(u));else sessionStorage.removeItem("pc_user")}catch(e){}}
-var user=getUser()||{guest:true};
-function getPromoFilter(){try{return sessionStorage.getItem("pc_promo")==="1"}catch(e){return false}}
-function setPromoFilter(v){try{sessionStorage.setItem("pc_promo",v?"1":"0")}catch(e){}}
-function qs(k){return new URLSearchParams(location.search).get(k)}
-function findP(c){c=(c||"").trim();for(var i=0;i<P.length;i++)if(P[i][0]===c)return P[i];return null}
-function urlCompare(c){return "compare.html?code="+encodeURIComponent(c)}
-function urlProduct(c,s){return "product.html?code="+encodeURIComponent(c)+"&s="+s}
-function V(id){var el=document.getElementById(id);return el?el.value.trim().replace(/[<>"]/g,""):""}
-function peso(n){return "₱"+(n%1?n.toFixed(2):n)}
-function stars(r){return r?"★ "+r.toFixed(1)+" / 5":"No rating yet"}
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-function today(){var d=new Date(),p=function(n){return (n<10?"0":"")+n};return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())}
-function isPromoActive(pr){return !!(pr&&pr.active&&(!pr.until||pr.until>=today()))}
-function fmtDate(s){var a=String(s).split("-");return new Date(+a[0],a[1]-1,+a[2]).toLocaleDateString("en-PH",{month:"short",day:"numeric",year:"numeric"})}
-function img(m){return '<svg viewBox="0 0 100 110" role="img" aria-label="Product image placeholder"><rect x="15" y="15" width="70" height="80" rx="8" fill="'+m.col+'"/><ellipse cx="50" cy="15" rx="35" ry="7" fill="#d5dbd7"/><rect x="15" y="45" width="70" height="26" fill="#fff" opacity=".92"/><text x="50" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#16261c">'+esc(m.b)+'</text></svg>'}
-
-function formatDisplayName(fullName) {
-    if (!fullName) return "";
-    var parts = fullName.trim().split(/\s+/);
-    if (parts.length === 1) return parts[0];
-    
-    var firstName = parts[0];
-    var lastNameInitial = parts[parts.length - 1].charAt(0).toUpperCase() + ".";
-    
-    if (parts.length === 2) {
-        return firstName + " " + lastNameInitial;
-    }
-    
-    var middleInitial = parts[1].charAt(0).toUpperCase() + ".";
-    return firstName + " " + middleInitial + " " + lastNameInitial;
+// Load the saved copy (if any) over the sample data from data.js.
+try {
+  var _s = JSON.parse(localStorage.getItem("pc_db") || "null");
+  if (_s && _s.v === DBV) {
+    STORES = _s.S;
+    P = _s.P;
+    M = _s.M;
+  }
+} catch (e) {
 }
 
-function revs(m){
-    var L = m.rv || RV;
-    if (!L.length) return '<div class="r mute">No reviews yet.</div>';
-    return L.map(function(r){
-        var reviewerName = formatDisplayName(r[0]);
-        return '<div class="r"><b>' + esc(reviewerName) + '</b> <span class="stars">' + '★'.repeat(r[1]) + '</span><br>' + esc(r[2]) + '</div>';
-    }).join('');
+// Saves stores/products to localStorage so every page sees changes. Call after editing STORES, P or M.
+function saveDB() {
+  try {
+    localStorage.setItem("pc_db", JSON.stringify({ v: DBV, S: STORES, P, M }));
+  } catch (e) {
+  }
+}
+// Who is logged in. Kept per browser tab (sessionStorage). null = nobody chose yet.
+function getUser() {
+  try {
+    return JSON.parse(sessionStorage.getItem("pc_user") || "null");
+  } catch (e) {
+    return null;
+  }
+}
+// Remembers the logged-in user (or forgets them when passed null).
+function setUser(u) {
+  try {
+    if (u) sessionStorage.setItem("pc_user", JSON.stringify(u));
+    else sessionStorage.removeItem("pc_user");
+  } catch (e) {
+  }
+}
+var user = getUser() || { guest: true };
+// Whether the "On Promo" toggle is on (shared by home and comparison pages).
+function getPromoFilter() {
+  try {
+    return sessionStorage.getItem("pc_promo") === "1";
+  } catch (e) {
+    return false;
+  }
+}
+// Saves the "On Promo" toggle.
+function setPromoFilter(v) {
+  try {
+    sessionStorage.setItem("pc_promo", v ? "1" : "0");
+  } catch (e) {
+  }
 }
 
+// ============================================================
+// 2. SMALL HELPERS
+// ============================================================
+
+// Reads a value from the page address, e.g. qs("code") for ?code=123.
+function qs(k) {
+  return new URLSearchParams(location.search).get(k);
+}
+// Finds a product row in P by barcode. Returns null when not found.
+function findP(c) {
+  c = (c || "").trim();
+  for (var i = 0; i < P.length; i++) if (P[i][0] === c) return P[i];
+  return null;
+}
+// Link to the comparison page of a product.
+function urlCompare(c) {
+  return "compare.html?code=" + encodeURIComponent(c);
+}
+// Link to the product page: product barcode + store index s.
+function urlProduct(c, s) {
+  return "product.html?code=" + encodeURIComponent(c) + "&s=" + s;
+}
+// Reads a text box: trimmed, with < > " removed.
+function V(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim().replace(/[<>"]/g, "") : "";
+}
+// Formats a number as pesos, e.g. 18.5 -> ₱18.50.
+function peso(n) {
+  return "₱" + (n % 1 ? n.toFixed(2) : n);
+}
+// Rating text, e.g. "★ 4.5 / 5".
+function stars(r) {
+  return r ? "★ " + r.toFixed(1) + " / 5" : "No rating yet";
+}
+// Makes text safe to place inside HTML. Use it on anything a user typed.
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function(c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+  });
+}
+// Today as yyyy-mm-dd in the visitor's local time.
+function today() {
+  var d = /* @__PURE__ */ new Date(), p = function(n) {
+    return (n < 10 ? "0" : "") + n;
+  };
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+}
+// True while a promo exists and its "until" date has not passed.
+function isPromoActive(pr) {
+  return !!(pr && pr.active && (!pr.until || pr.until >= today()));
+}
+// yyyy-mm-dd -> "Nov 20, 2026".
+function fmtDate(s) {
+  var a = String(s).split("-");
+  return new Date(+a[0], a[1] - 1, +a[2]).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" });
+}
+// Placeholder product picture (a colored can with the brand name).
+function img(m) {
+  return '<svg viewBox="0 0 100 110" role="img" aria-label="Product image placeholder">' +
+      '<rect x="15" y="15" width="70" height="80" rx="8" fill="' + m.col +
+      '"/><ellipse cx="50" cy="15" rx="35" ry="7" fill="#d5dbd7"/><rect x="15" y="45" width="70" height="26" fill="#fff" opacity=".92"/>' +
+      '<text x="50" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#16261c">' +
+      esc(m.b) + "</text></svg>";
+}
+// HTML for a product's reviews.
+function revs(m) {
+  var L = m.rv || RV;
+  if (!L.length) return '<div class="r mute">No reviews yet.</div>';
+  return L.map(function(r) {
+    return '<div class="r"><b>' + esc(r[0]) + '</b> <span class="stars">' +
+        "★".repeat(r[1]) + "</span><br>" + esc(r[2]) + "</div>";
+  }).join("");
+}
 // ---------- promo pricing + promo form (shared by index.html and product.html) ----------
-function promoPrice(pr,orig){return(isPromoActive(pr)&&pr.price!=null&&pr.price<orig)?pr.price:null}
-function effPrice(p,s){var x=promoPrice(p[5][s],p[3][s]);return x!=null?x:p[3][s]}
-function priceHTML(p,s){var x=promoPrice(p[5][s],p[3][s]);return x!=null?'<s class="old">'+peso(p[3][s])+'</s> <span class="now">'+peso(x)+'</span>':peso(p[3][s])}
-function promoFields(){return '<label>Promo mechanics<input class="in" id="pMech" maxlength="80" placeholder="e.g., Buy 1 Take 1"></label>'+
- '<label>Promo valid until<input class="in" id="pUntil" type="date" min="'+today()+'"></label>'+
- '<fieldset class="pm"><legend>Promo price</legend><label class="rd"><input type="radio" name="pMode" value="same" checked> Same price</label><label class="rd"><input type="radio" name="pMode" value="price"> New price</label><label class="rd"><input type="radio" name="pMode" value="pct"> Percent off</label>'+
- '<label id="pPriceW" hidden>Promo price (₱)<input class="in" id="pPrice" type="number" step="0.01" min="0.01"></label><label id="pPctW" hidden>Percent off (%)<input class="in" id="pPct" type="number" step="1" min="1" max="99"></label></fieldset>'+
- '<p class="msg" id="perr" role="alert"></p>'}
-function readPromo(orig,by){var mech=V("pMech"),u=V("pUntil"),c=document.querySelector('input[name="pMode"]:checked'),mode=c?c.value:"same";
- if(!mech||!u)return{e:"Add the promo mechanics and the until date."};
- if(u<today())return{e:"The until date can’t be in the past."};
- var pr={active:true,mechanics:mech,until:u,by:by,mode:mode,price:null};
- if(mode==="price"){var x=parseFloat(V("pPrice"));if(!(x>0))return{e:"Enter the promo price."};if(orig&&x>=orig)return{e:"The promo price must be lower than the regular price (₱"+orig+"). Choose “Same price” if it didn’t change."};pr.price=Math.round(x*100)/100}
- if(mode==="pct"){var q=parseFloat(V("pPct"));if(!(orig>0))return{e:"Enter the regular price first."};if(!(q>0&&q<100))return{e:"Enter a percentage between 1 and 99."};pr.pct=q;pr.price=Math.round(orig*(1-q/100)*100)/100}
- return{p:pr}}
-document.addEventListener("change",function(e){if(e.target.name==="pMode"){var a=document.getElementById("pPriceW"),b=document.getElementById("pPctW");if(a)a.hidden=e.target.value!=="price";if(b)b.hidden=e.target.value!=="pct"}});
-// promos are removed automatically once their "until" date has passed
-(function(){var ch=false;P.forEach(function(r){(r[5]||[]).forEach(function(pr,i){if(pr&&pr.until&&pr.until<today()){r[5][i]=null;ch=true}})});if(ch)saveDB()})();
 
-// ---------- navigation bar + page links ----------
-function urlMfr(n){return "manufacturer.html?name="+encodeURIComponent(n)}
-function urlStore(n){return "store.html?name="+encodeURIComponent(n)}
-function navbar(a){var L=[["home","index.html","Home"],["mfr","manufacturer.html","Manufacturers"],["store","store.html","Stores"]];
- return userbar()+'<nav class="nav" aria-label="Main"><span class="brand"><span class="pg">₱</span>resyo Check</span>'+L.map(function(l){return '<a href="'+l[1]+'"'+(l[0]===a?' aria-current="page"':'')+'>'+l[2]+'</a>'}).join('')+'</nav>'}
-function lowest(i){var v=null;P[i][3].forEach(function(x,s){if(x!=null){var e=effPrice(P[i],s);if(v==null||e<v)v=e}});return v}
+// ============================================================
+// 3. PROMOS
+// ============================================================
 
-function locName(i){var s=STORES[i];return(s.b?s.b+", ":"")+s.l}
-
-function userbar(){
-    var displayName = user.guest ? "Guest" : formatDisplayName(user.firstName || user.name);
-    return '<div class="who"><span>Hi, '+(user.guest?'Guest':esc(displayName))+'!</span>'+(user.guest?'<a class="link" href="index.html#signin">Log in</a> | <a class="link" href="index.html#signup">Sign up</a>':'<button class="link" type="button" data-a="logout">Log out</button>')+'</div>';
+// The promo price when it is really lower than the regular price, else null.
+function promoPrice(pr, orig) {
+  return isPromoActive(pr) && pr.price != null && pr.price < orig ? pr.price : null;
 }
-document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('button[data-a="logout"]');if(b&&typeof go!=="function"){setUser(null);location.href="index.html"}});
+// The price a shopper pays right now (promo price if there is one).
+function effPrice(p, s) {
+  var x = promoPrice(p[5][s], p[3][s]);
+  return x != null ? x : p[3][s];
+}
+// Price as HTML. On promo: old price crossed out + promo price.
+function priceHTML(p, s) {
+  var x = promoPrice(p[5][s], p[3][s]);
+  return x != null ? '<s class="old">' + peso(p[3][s]) + '</s> <span class="now">' +
+      peso(x) + "</span>" : peso(p[3][s]);
+}
+// HTML for the promo form fields (mechanics, until date, price option).
+function promoFields() {
+  return '<label>Promo mechanics<input class="in" id="pMech" maxlength="80" placeholder="e.g., Buy 1 Take 1">' +
+      '</label><label>Promo valid until<input class="in" id="pUntil" type="date" min="' +
+      today() + '"></label><fieldset class="pm"><legend>Promo price</legend><label class="rd">' +
+      '<input type="radio" name="pMode" value="same" checked> Same price</label>' +
+      '<label class="rd"><input type="radio" name="pMode" value="price"> New price</label>' +
+      '<label class="rd"><input type="radio" name="pMode" value="pct"> Percent off</label>' +
+      '<label id="pPriceW" hidden>Promo price (₱)<input class="in" id="pPrice" type="number" step="0.01" min="0.01">' +
+      '</label><label id="pPctW" hidden>Percent off (%)<input class="in" id="pPct" type="number" step="1" min="1" max="99">' +
+      '</label></fieldset><p class="msg" id="perr" role="alert"></p>';
+}
+// Reads and checks the promo form. Returns {e: error message} or {p: promo}.
+function readPromo(orig, by) {
+  var mech = V("pMech"), u = V("pUntil"), c = document.querySelector('input[name="pMode"]:checked'), mode = c ? c.value : "same";
+  if (!mech || !u) return { e: "Add the promo mechanics and the until date." };
+  if (u < today()) return { e: "The until date can’t be in the past." };
+  var pr = { active: true, mechanics: mech, until: u, by, mode, price: null };
+  if (mode === "price") {
+    var x = parseFloat(V("pPrice"));
+    if (!(x > 0)) return { e: "Enter the promo price." };
+    if (orig && x >= orig) return { e: "The promo price must be lower than the regular price (₱" +
+        orig + "). Choose “Same price” if it didn’t change." };
+    pr.price = Math.round(x * 100) / 100;
+  }
+  if (mode === "pct") {
+    var q = parseFloat(V("pPct"));
+    if (!(orig > 0)) return { e: "Enter the regular price first." };
+    if (!(q > 0 && q < 100)) return { e: "Enter a percentage between 1 and 99." };
+    pr.pct = q;
+    pr.price = Math.round(orig * (1 - q / 100) * 100) / 100;
+  }
+  return { p: pr };
+}
+document.addEventListener("change", function(e) {
+  if (e.target.name === "pMode") {
+    var a = document.getElementById("pPriceW"), b = document.getElementById("pPctW");
+    if (a) a.hidden = e.target.value !== "price";
+    if (b) b.hidden = e.target.value !== "pct";
+  }
+});
+// promos are removed automatically once their "until" date has passed
+(function() {
+  var ch = false;
+  P.forEach(function(r) {
+    (r[5] || []).forEach(function(pr, i) {
+      if (pr && pr.until && pr.until < today()) {
+        r[5][i] = null;
+        ch = true;
+      }
+    });
+  });
+  if (ch) saveDB();
+})();
+// ---------- navigation bar + page links ----------
+
+// ============================================================
+// 4. NAVIGATION
+// ============================================================
+
+// Link to a manufacturer page.
+function urlMfr(n) {
+  return "manufacturer.html?name=" + encodeURIComponent(n);
+}
+// Link to a store page.
+function urlStore(n) {
+  return "store.html?name=" + encodeURIComponent(n);
+}
+// Greeting row + menu bar. Pass the active menu: "home", "mfr" or "store".
+function navbar(a) {
+  var L = [["home", "index.html", "Home"], ["mfr", "manufacturer.html", "Manufacturers"], ["store", "store.html", "Stores"]];
+  return userbar() + '<nav class="nav" aria-label="Main"><span class="brand"><span class="pg">₱</span>resyo Check</span>' +
+      L.map(function(l) {
+    return '<a href="' + l[1] + '"' + (l[0] === a ? ' aria-current="page"' : "") +
+        ">" + l[2] + "</a>";
+  }).join("") + "</nav>";
+}
+// Lowest current price of product i across all branches.
+function lowest(i) {
+  var v = null;
+  P[i][3].forEach(function(x, s) {
+    if (x != null) {
+      var e = effPrice(P[i], s);
+      if (v == null || e < v) v = e;
+    }
+  });
+  return v;
+}
+// Full location text of store index i: branch + area.
+function locName(i) {
+  var s = STORES[i];
+  return (s.b ? s.b + ", " : "") + s.l;
+}
+// The "Hi, Name!" row with Log out (or Log in for guests).
+function userbar() {
+  return '<div class="who"><span>Hi, ' + (user.guest ? "Guest" : esc(user.name)) +
+      "!</span>" + (user.guest ? '<a class="link" href="index.html#signin">Log in existing user</a>' : '<button class="link" type="button" data-a="logout">Log out</button>') +
+      "</div>";
+}
+document.addEventListener("click", function(e) {
+  var b = e.target.closest && e.target.closest('button[data-a="logout"]');
+  if (b && typeof go !== "function") {
+    setUser(null);
+    location.href = "index.html";
+  }
+});
+// ---------- accounts (browser-only demo: no server) ----------
+
+// ============================================================
+// 5. ACCOUNTS (demo only)
+// ============================================================
+
+// All saved accounts (list). Browser-only demo storage.
+function accounts() {
+  try {
+    return JSON.parse(localStorage.getItem("pc_accounts") || "[]");
+  } catch (e) {
+    return [];
+  }
+}
+// Saves the account list.
+function saveAccounts(a) {
+  try {
+    localStorage.setItem("pc_accounts", JSON.stringify(a));
+  } catch (e) {
+  }
+}
+// "Juan Dela Cruz Santos" -> first name + middle initial + last-name initial: "Juan D. S."
+// "Juan" + "Dela" + "Santos" -> "Juan D. S." (first name, middle initial, last initial).
+function displayName(first, mid, last) {
+  return first + (mid ? " " + mid.charAt(0).toUpperCase() + "." : "") +
+      " " + last.charAt(0).toUpperCase() + ".";
+}
+// Bytes -> hex text (used for password hashes).
+function hex(b) {
+  return Array.from(new Uint8Array(b)).map(function(x) {
+    return (x < 16 ? "0" : "") + x.toString(16);
+  }).join("");
+}
+// Salted PBKDF2 hash of a password. Passwords are never stored as typed.
+async function hashPw(pw, salt) {
+  var e = new TextEncoder(), k = await crypto.subtle.importKey("raw", e.encode(pw), "PBKDF2", false, ["deriveBits"]);
+  return hex(await crypto.subtle.deriveBits({ name: "PBKDF2", salt: e.encode(salt), iterations: 1e5, hash: "SHA-256" }, k, 256));
+}
+// Validates the sign-up form and saves the account. Returns {e} or {user}.
+async function signUp(f) {
+  var nm = /^[\p{L}][\p{L}\s'.\-]{0,39}$/u;
+  if (!nm.test(f.first)) return { e: "Enter a valid first name." };
+  if (f.mid && !nm.test(f.mid)) return { e: "Enter a valid middle name." };
+  if (!nm.test(f.last)) return { e: "Enter a valid last name." };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) return { e: "Enter a valid email address." };
+  if (!/^[A-Za-z0-9_.]{3,20}$/.test(f.username)) return { e: "Username must be 3 to 20 letters, numbers, dots or underscores." };
+  if (f.password.length < 8) return { e: "Password must be at least 8 characters." };
+  if (!(window.crypto && crypto.subtle)) return { e: "Signing up needs a secure (https) page." };
+  var A = accounts(), u = f.username.toLowerCase(), em = f.email.toLowerCase();
+  if (A.some(function(a) {
+    return a.u === u;
+  })) return { e: "That username is taken." };
+  if (A.some(function(a) {
+    return a.email === em;
+  })) return { e: "An account with that email already exists." };
+  var salt = hex(crypto.getRandomValues(new Uint8Array(16))), name = displayName(f.first, f.mid, f.last);
+  A.push({ u, username: f.username, email: em, first: f.first, mid: f.mid, last: f.last, name, salt, hash: await hashPw(f.password, salt) });
+  saveAccounts(A);
+  return { user: { guest: false, name, username: f.username } };
+}
+// Checks username + password. Returns {e} or {user}.
+async function logIn(un, pw) {
+  var a = accounts().filter(function(x) {
+    return x.u === un.toLowerCase();
+  })[0], bad = { e: "Wrong username or password." };
+  if (!(window.crypto && crypto.subtle)) return { e: "Logging in needs a secure (https) page." };
+  if (!a || await hashPw(pw, a.salt) !== a.hash) return bad;
+  return { user: { guest: false, name: a.name, username: a.username } };
+}
